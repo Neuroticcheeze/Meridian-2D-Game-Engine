@@ -1,0 +1,4 @@
+Meridian Technologies License - Version 1.0 - 16/5/2016
+
+No one except for members on the development team may use or modify any file 
+or any part of a file from this project in any form regardless of any purpose.
