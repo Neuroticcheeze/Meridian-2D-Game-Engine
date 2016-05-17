@@ -17,13 +17,16 @@
 
 #pragma once
 
+#define REQUIRE_MODULE(module0) __if_not_exists(module0) { }
+
+
 #include <vector>
 using std::vector;
 using std::is_base_of;
 
 namespace Meridian
 {
-	//Forward declarations
+	//External Forward Declarations
 	class IModule;
 
 	/*====================================================================================================================
@@ -31,6 +34,10 @@ namespace Meridian
 	====================================================================================================================*/
 	class MeridianEngine
 	{
+	public:///Internal Forward Delarations
+
+		enum class GameLoopMode;
+
 	public:///Constructors/Destructors
 
 		MeridianEngine();
@@ -44,7 +51,7 @@ namespace Meridian
 
 			/*Run the engine's internal gameloop which will take care of updating and rendering 
 			each module.*/
-		void Run();
+		void Run(const GameLoopMode & p_mode);
 
 			/*Close down the engine which will release any resources created (Different to allocated 
 			memory, which is taken care of by the dtor) in Load and close all modules in the same order 
@@ -69,5 +76,29 @@ namespace Meridian
 	private:///Member Fields
 		bool m_isRunning;
 		vector<IModule *> m_modules;
+	};
+
+	/*====================================================================================================================
+	Game loop modes to control how the gameloop works (VARIABLE is always the best one to use).
+	//	*- UNBOUND		(Game will run as fast as the computer can, there is no time synchronisation)
+	//	*- FIXED		(Game will run at a target framerate and sleep for a fixed amount, deltatime is always 1000/target)
+	//	*- VARIABLE		(Game will attempt to run at a target framerate. If the FPS drops below the target, deltatime is used, otherwise the game will wait out the rest of a frame if it finishes early)
+	====================================================================================================================*/
+	enum class MeridianEngine::GameLoopMode
+	{
+			/*Game will run as fast as the computer can, 
+			there is no time synchronisation*/
+		UNBOUND,
+
+			/*Game will run at a target framerate and sleep 
+			for a fixed amount, deltatime is always 
+			1000/target*/
+		FIXED,
+
+			/*Game will attempt to run at a target framerate. 
+			If the FPS drops below the target, deltatime is 
+			used, otherwise the game will wait out the rest of 
+			a frame if it finishes early to match the target*/
+		VARIABLE
 	};
 }
