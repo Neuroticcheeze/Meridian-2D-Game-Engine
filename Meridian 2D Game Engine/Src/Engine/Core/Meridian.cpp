@@ -9,8 +9,11 @@
 ===================================================================*/
 
 #include "Meridian.hpp"
+#include "Module\Module.hpp"
+
 #include <assert.h>
 #include <glfw3.h>
+#include <Windows.h>
 
 using namespace Meridian;
 
@@ -34,33 +37,57 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 {
 	m_isRunning = true;
 
-	// The amount of time we want to simulate each step, in milliseconds
-	// (written as implicit frame-rate)
-	float m_target = 60.0F;
+	float m_targetFramerate;
 
-	static float m_timeDelta = 1000.0F / m_target;
-	static float m_timeAccumulator = 0;
+	DEVMODE lpDevMode;
+	memset(&lpDevMode, 0, sizeof(DEVMODE));
+	lpDevMode.dmSize = sizeof(DEVMODE);
+	lpDevMode.dmDriverExtra = 0;
+
+	if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &lpDevMode) == 0)
+	{
+		m_targetFramerate = 60; // default value if cannot retrieve from user settings.
+	}
+	else
+	{
+		m_targetFramerate = lpDevMode.dmDisplayFrequency;
+	}
+
+
+
+
+	float m_target = 1000.0F / m_targetFramerate;
+	float m_invTarget = m_targetFramerate / 1000.0F;
+
+	float m_startTime = 0, m_finishTime = 0;
+	float m_remainder = 0, m_duration = 0, m_deltaTime = 0;
 
 	while (m_isRunning)
 	{
-		float m_timeSimulatedThisIteration = 0;
-		float m_startTime = glfwGetTime();
+		m_startTime = (float)glfwGetTime();
 
-		while (m_timeAccumulator >= m_timeDelta)
+		//Loop
+		printf("Capped FPS: %f, True FPS: %f\n", min(1.0F / m_duration, m_targetFramerate), 1.0F / m_duration);
+		for (auto module : m_modules)
 		{
-			printf("Delta time %f", m_timeDelta);
-
-			//stepGameState(m_timeDelta)
-			m_timeAccumulator -= m_timeDelta;
-			m_timeSimulatedThisIteration += m_timeDelta;
+			module->Update(m_deltaTime);
 		}
 
-		//stepAnimation(m_timeSimulatedThisIteration)
+		m_finishTime = (float)glfwGetTime();
 
-		//renderFrame() // OpenGL frame drawing code goes here
-		//handleUserInput()
+		m_duration = m_finishTime - m_startTime;
 
-		m_timeAccumulator += glfwGetTime() - m_startTime;
+		m_remainder = m_target - m_duration;
+
+		if (m_remainder > 0)
+		{
+			Sleep(m_remainder);
+		}
+
+		else
+		{
+			m_deltaTime = m_duration * m_invTarget;
+		}
 	}
 }
 
