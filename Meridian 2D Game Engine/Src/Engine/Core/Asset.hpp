@@ -18,10 +18,12 @@
 
 typedef unsigned char byte;
 
+#include <assert.h>
+
 namespace Meridian
 {
 	//External Forward Declarations
-	struct SerialBuffer;
+	class SerialBuffer;
 
 	/*========================================================================
 	Base structure for an intermediate object between the game and saved data.
@@ -56,11 +58,53 @@ namespace Meridian
 
 
 	/*==================================================================
-	An object to store a stream of bytes and how many bytes it contains.
+	An object to store a stream of bytes and how many bytes it contains. 
+	This object trusts that you do not mess around with its data by 
+	deleting/reassigning "buffer".
 	==================================================================*/
-	struct SerialBuffer
+	class SerialBuffer
 	{
-		byte * buffer;
-		unsigned int size;
+		byte * m_buffer;
+		unsigned int m_size;
+
+	public:
+
+		SerialBuffer();
+		SerialBuffer(const SerialBuffer & p_other);
+		~SerialBuffer();
+
+		inline const int & Size() const
+		{
+			return m_size;
+		}
+
+		inline byte * Data(const unsigned int & p_offset = 0)
+		{
+			if (m_size == 0)
+				return nullptr;
+
+			assert(p_offset < m_size);
+
+			return m_buffer + p_offset;
+		}
+
+		inline const byte * C_Data(const unsigned int & p_offset = 0) const
+		{
+			if (m_size == 0)
+				return nullptr;
+
+			assert(p_offset < m_size);
+
+			return m_buffer + p_offset;
+		}
+
+		void Reallocate(const unsigned int & p_requiredSize)
+		{
+			free(m_buffer);
+
+			m_buffer = p_requiredSize > 0 ? 
+				static_cast<byte*>(malloc(m_size = p_requiredSize)) : 
+				nullptr;
+		}
 	};
 }
