@@ -1,5 +1,3 @@
-#include <glfw3.h>
-
 #include "Engine\Core\Module\Managers\ModuleInput.hpp"
 #include "Engine\Core\Meridian.hpp"
 
