@@ -53,7 +53,7 @@ namespace Meridian
 
 		const uvec2 & GetMousePosition() const;
 		
-	private:
+	private:///Member Fields
 
 		uvec2 m_mousePosition;
 	};

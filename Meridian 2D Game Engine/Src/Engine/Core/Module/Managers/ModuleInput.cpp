@@ -42,7 +42,9 @@ void InputManager::Update(MeridianEngine * p_engine, const float & p_dt)
 
 void InputManager::Render(MeridianEngine * p_engine)
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glfwSwapBuffers(p_engine->GetWindow());
 }
 
 void InputManager::Finalise(MeridianEngine * p_engine)
