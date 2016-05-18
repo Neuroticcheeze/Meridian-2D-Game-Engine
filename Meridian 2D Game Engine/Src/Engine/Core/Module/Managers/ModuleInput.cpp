@@ -11,6 +11,8 @@
 #include "ModuleInput.hpp"
 #include "..\..\Meridian.hpp"
 #include <glfw3.h>
+#include <glm\glm.hpp>
+using glm::max;
 
 using namespace Meridian;
 
@@ -32,11 +34,10 @@ void InputManager::Update(MeridianEngine * p_engine, const float & p_dt)
 {
 	static double x, y;
 
-	//TODO: make a way to access the window anywhere! OR make this check if the render manager is implemented, otherwise, don't compile this piece.
 	glfwGetCursorPos(p_engine->GetWindow(), &x, &y);
 
-	m_mousePosition.x = static_cast<unsigned int>(x);
-	m_mousePosition.y = static_cast<unsigned int>(y);
+	m_mousePosition.x = static_cast<unsigned int>(max(x, 0.0));
+	m_mousePosition.y = static_cast<unsigned int>(max(y, 0.0));
 }
 
 void InputManager::Render(MeridianEngine * p_engine)
