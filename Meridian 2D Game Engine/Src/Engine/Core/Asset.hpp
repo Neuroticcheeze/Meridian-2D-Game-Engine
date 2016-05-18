@@ -12,6 +12,11 @@
 //					-Decode
 //
 //				SerialBuffer
+//					-Size
+//					-Data
+//					-C_Data
+//					-Reallocate
+//
 ===================================================================*/
 
 #pragma once
@@ -64,20 +69,23 @@ namespace Meridian
 	==================================================================*/
 	class SerialBuffer
 	{
-		byte * m_buffer;
-		unsigned int m_size;
-
-	public:
+		
+	public:///Constructors/Destructor
 
 		SerialBuffer();
 		SerialBuffer(const SerialBuffer & p_other);
 		~SerialBuffer();
 
+	public:///Member Functions
+
+			/*Get the size of this buffer in bytes.*/
 		inline const int & Size() const
 		{
 			return m_size;
 		}
 
+			/*Get a ptr to the data contained in this buffer with the 
+			specified offset. The offset must be inside the size of the buffer.*/
 		inline byte * Data(const unsigned int & p_offset = 0)
 		{
 			if (m_size == 0)
@@ -88,6 +96,9 @@ namespace Meridian
 			return m_buffer + p_offset;
 		}
 
+			/*Get a const ptr to the data contained in this buffer with the 
+			specified offset. The offset must be inside the size of the buffer.
+			This is a read-only equivalent of Data.*/
 		inline const byte * C_Data(const unsigned int & p_offset = 0) const
 		{
 			if (m_size == 0)
@@ -98,6 +109,8 @@ namespace Meridian
 			return m_buffer + p_offset;
 		}
 
+			/*Reallocate this buffer, effectively deleting any previous 
+			data and resizing the buffer to the specified required size.*/
 		void Reallocate(const unsigned int & p_requiredSize)
 		{
 			free(m_buffer);
@@ -106,5 +119,10 @@ namespace Meridian
 				static_cast<byte*>(malloc(m_size = p_requiredSize)) : 
 				nullptr;
 		}
+
+	private:///Member Fields
+
+		byte * m_buffer;
+		unsigned int m_size;
 	};
 }

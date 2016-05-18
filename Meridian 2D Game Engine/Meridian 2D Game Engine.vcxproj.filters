@@ -32,6 +32,9 @@
     <ClCompile Include="Src\Engine\Core\Asset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Engine\Assets\AssetTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Engine\Core\Meridian.hpp" />
@@ -39,5 +42,6 @@
     <ClInclude Include="Src\Engine\Managers\ModuleInput.hpp" />
     <ClInclude Include="Src\Engine\Core\Module.hpp" />
     <ClInclude Include="Src\Engine\Core\Asset.hpp" />
+    <ClInclude Include="Src\Engine\Assets\AssetTexture.hpp" />
   </ItemGroup>
 </Project>
