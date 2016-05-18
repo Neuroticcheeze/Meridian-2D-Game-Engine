@@ -23,15 +23,15 @@ namespace Meridian
 	============================================================*/
 	class IModule
 	{
-	protected:///Constructor
+		//Friendly Internal Forward Declarations
+		friend class MeridianEngine;
+
+	protected:///Constructor/Destructor
 
 		IModule();
-
-	public:///Destructor
-
 		virtual ~IModule();
 
-	public:///Member Functions
+	protected:///Member Functions
 
 		/*Initialise this module and load anything it needs to run long-term.*/
 		virtual void Initialise() = 0;

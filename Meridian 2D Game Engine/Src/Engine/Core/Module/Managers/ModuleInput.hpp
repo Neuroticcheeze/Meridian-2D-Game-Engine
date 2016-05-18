@@ -11,6 +11,8 @@
 //
 ===================================================================*/
 
+//TODO: Add interface with mouse and keyboard. Eventually for handheld devices, etc.
+
 #pragma once
 
 #include "..\Module.hpp"
@@ -22,12 +24,12 @@ namespace Meridian
 	==============================================================================================================*/
 	class InputManager : public IModule
 	{
-	public:///Constructors/Destructors
+	private:///Constructors/Destructors
 
 		InputManager();
 		~InputManager();
 
-	public:///Member Functions
+	private:///Member Functions
 
 		/*Initialise this module and load anything it needs to run long-term.*/
 		void Initialise();
@@ -40,6 +42,9 @@ namespace Meridian
 
 		/*Finalise this module and unload/delete anything it loaded during the initialise state.*/
 		void Finalise();
+
+	public:///Input utilities
+
 		
 	private:
 	};
