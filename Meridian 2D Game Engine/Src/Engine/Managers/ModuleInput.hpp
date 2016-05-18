@@ -6,7 +6,7 @@
 //
 //Header File:	ModuleInput.hpp
 //
-//Classes:		InputManager
+//Objects:		InputManager
 //					-Implements IModule
 //
 ===================================================================*/

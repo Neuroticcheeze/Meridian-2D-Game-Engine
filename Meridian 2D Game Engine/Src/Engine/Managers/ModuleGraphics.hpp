@@ -6,7 +6,7 @@
 //
 //Header File:	ModuleGraphics.hpp
 //
-//Classes:		GraphicsManager
+//Objects:		GraphicsManager
 //					-Implements IModule
 //
 ===================================================================*/

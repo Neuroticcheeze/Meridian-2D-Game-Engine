@@ -6,7 +6,7 @@
 //
 //Header File:	Module.hpp
 //
-//Classes:		IModule
+//Objects:		IModule
 //					-Initialise
 //					-Update
 //					-Render

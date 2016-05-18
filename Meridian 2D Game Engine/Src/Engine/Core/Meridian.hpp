@@ -6,7 +6,7 @@
 //
 //Header File:	Meridian.hpp
 //
-//Classes:		MeridianEngine
+//Objects:		MeridianEngine
 //					-Load
 //					-Run
 //					-Unload
