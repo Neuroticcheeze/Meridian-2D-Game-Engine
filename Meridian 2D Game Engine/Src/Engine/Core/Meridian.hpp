@@ -81,11 +81,16 @@ namespace Meridian
 		}
 
 		template <typename T>
-		T * GetModule(const int & p_index)
+		inline T * GetModule(const int & p_index)
 		{
 			static_assert(std::is_base_of<IModule, T>::value, "T must derive from IModule");
 
 			return *(m_modules.data() + p_index);
+		}
+
+		inline GLFWwindow * GetWindow()
+		{
+			return m_window;
 		}
 
 	private:///Member Fields

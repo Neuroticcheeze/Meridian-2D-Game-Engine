@@ -51,6 +51,13 @@ void MeridianEngine::Load()
 
 	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
 		Terminate();
+	
+	return;
+
+	for (auto module : m_modules)
+	{
+		module->Initialise(this);
+	}
 }
 
 void MeridianEngine::Run(const GameLoopMode & p_mode)
@@ -88,11 +95,10 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 
 		//Loop
 		printf("Capped FPS: %f, True FPS: %f\n", min(1.0F / m_duration, m_targetFramerate), 1.0F / m_duration);
-		
 		for (auto module : m_modules)
 		{
-			module->Update(m_deltaTime);
-			module->Render();
+			module->Update(this, m_deltaTime);
+			module->Render(this);
 		}
 
 		m_finishTime = (float)glfwGetTime();
@@ -115,6 +121,11 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 
 void MeridianEngine::Unload()
 {
+	for (auto module : m_modules)
+	{
+		module->Finalise(this);
+	}
+
 	if (m_isInitialised)
 	{
 		glfwDestroyWindow(m_window);

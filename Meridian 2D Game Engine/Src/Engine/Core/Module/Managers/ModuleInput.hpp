@@ -38,16 +38,16 @@ namespace Meridian
 	private:///Member Functions
 
 		/*Initialise this module and load anything it needs to run long-term.*/
-		void Initialise();
+		void Initialise(MeridianEngine * p_engine);
 
 		/*Update this module inside the engine's gameloop.*/
-		void Update(const float & p_dt);
+		void Update(MeridianEngine * p_engine, const float & p_dt);
 
 		/*Immediately render anything this module has to inside the OpenGL clear-swap space*/
-		void Render();
+		void Render(MeridianEngine * p_engine);
 
 		/*Finalise this module and unload/delete anything it loaded during the initialise state.*/
-		void Finalise();
+		void Finalise(MeridianEngine * p_engine);
 
 	public:///Input utilities
 
