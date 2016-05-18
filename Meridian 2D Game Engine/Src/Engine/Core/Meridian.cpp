@@ -9,7 +9,7 @@
 ===================================================================*/
 
 #include "Meridian.hpp"
-#include "Module\Module.hpp"
+#include "Module.hpp"
 
 #include <gl_core_4_4.h>
 #include <assert.h>

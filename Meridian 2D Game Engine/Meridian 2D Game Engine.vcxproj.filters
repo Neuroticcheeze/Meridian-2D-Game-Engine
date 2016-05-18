@@ -14,26 +14,26 @@
     <ClCompile Include="Src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Engine\Core\Module\Module.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Engine\Core\Module\Managers\ModuleInput.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Engine\Core\Meridian.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Dep\GLCORE-4.4\gl_core_4_4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Engine\Core\Module\Managers\ModuleGraphics.cpp">
+    <ClCompile Include="Src\Engine\Managers\ModuleGraphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Engine\Managers\ModuleInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Engine\Core\Module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Engine\Core\Module\Module.hpp" />
-    <ClInclude Include="Src\Engine\Core\Module\Managers\ModuleInput.hpp" />
     <ClInclude Include="Src\Engine\Core\Meridian.hpp" />
-    <ClInclude Include="Src\Engine\Core\Module\Managers\ModuleGraphics.hpp" />
+    <ClInclude Include="Src\Engine\Managers\ModuleGraphics.hpp" />
+    <ClInclude Include="Src\Engine\Managers\ModuleInput.hpp" />
+    <ClInclude Include="Src\Engine\Core\Module.hpp" />
   </ItemGroup>
 </Project>

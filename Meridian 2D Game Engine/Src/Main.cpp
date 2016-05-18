@@ -1,4 +1,5 @@
-#include "Engine\Core\Module\Managers\ModuleInput.hpp"
+#include "Engine\Managers\ModuleInput.hpp"
+#include "Engine\Managers\ModuleGraphics.hpp"
 #include "Engine\Core\Meridian.hpp"
 
 
@@ -25,6 +26,7 @@ void main()
 	AI
 	*/
 	engine->AddModule<Meridian::InputManager>();
+	engine->AddModule<Meridian::GraphicsManager>();
 
 	engine->Load();
 	engine->Run(Meridian::MeridianEngine::GameLoopMode::VARIABLE);
