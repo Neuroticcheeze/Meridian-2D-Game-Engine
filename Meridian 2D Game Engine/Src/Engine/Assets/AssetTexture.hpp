@@ -35,10 +35,11 @@ namespace Meridian
 		~AssetTexture();
 
 #ifdef _DEBUG
-		/*Used in debug mode to read in raw resources (.png, .xml, .mp3, etc), and fill this
-		asset's members just like Decode does (instead from the resource file). Once a resource
-		file has been generated during development, this asset will get its data from there instead.*/
-		void Load(const char ** p_resourcePaths);
+		/*Used in debug mode to read in raw resources (.png, .xml, .mp3, etc), including information
+		about width, size, etc. It then fill this asset's members just like Decode does (instead from
+		the resource file). Once a resource file has been generated during development, this asset
+		will get its data from there instead.*/
+		void Load(RawProperty * p_resources);
 
 		/*Used in debug mode to serialise its data into a buffer to be written to the game's
 		single resource file to be read in release build by Decode. Since the resource file is

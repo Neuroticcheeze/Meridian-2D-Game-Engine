@@ -17,6 +17,8 @@
 //					-C_Data
 //					-Reallocate
 //
+//				RawProperty
+//
 ===================================================================*/
 
 #pragma once
@@ -24,11 +26,13 @@
 typedef unsigned char byte;
 
 #include <assert.h>
+#include <Windows.h>
 
 namespace Meridian
 {
 	//External Forward Declarations
 	class SerialBuffer;
+	struct RawProperty;
 
 	/*========================================================================
 	Base structure for an intermediate object between the game and saved data.
@@ -47,10 +51,11 @@ namespace Meridian
 	protected:///Member Functions
 
 #ifdef _DEBUG
-			/*Used in debug mode to read in raw resources (.png, .xml, .mp3, etc), and fill this 
-			asset's members just like Decode does (instead from the resource file). Once a resource 
-			file has been generated during development, this asset will get its data from there instead.*/
-		virtual void Load(const char ** p_resourcePaths) = 0;
+			/*Used in debug mode to read in raw resources (.png, .xml, .mp3, etc), including information 
+			about width, size, etc. It then fill this asset's members just like Decode does (instead from 
+			the resource file). Once a resource file has been generated during development, this asset 
+			will get its data from there instead.*/
+		virtual void Load(RawProperty * p_resources) = 0;
 
 			/*Used in debug mode to serialise its data into a buffer to be written to the game's 
 			single resource file to be read in release build by Decode. Since the resource file is 
@@ -124,5 +129,25 @@ namespace Meridian
 
 		byte * m_buffer;
 		unsigned int m_size;
+	};
+
+	/*==================================================================
+	Used as a piece of information, whether a filepath, a number, colour
+	format, to define the asset it's used for.
+	==================================================================*/
+	struct RawProperty
+	{
+		enum { C_STR, CHAR, INT, FLOAT, U_INT, SHORT, U_SHORT, LONG, U_LONG } m_tag;
+		union
+		{
+			const char* c_str;
+			char c;
+			int i;
+			unsigned int u_i;
+			short s;
+			unsigned short u_s;
+			long l;
+			unsigned long u_l;
+		};
 	};
 }
