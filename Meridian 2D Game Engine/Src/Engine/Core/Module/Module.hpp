@@ -23,7 +23,7 @@ namespace Meridian
 	============================================================*/
 	class IModule
 	{
-		//Friendly Internal Forward Declarations
+	public:///Friendly Internal Forward Declarations
 		friend class MeridianEngine;
 
 	protected:///Constructor/Destructor

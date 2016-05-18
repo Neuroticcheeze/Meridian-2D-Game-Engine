@@ -17,6 +17,9 @@
 
 #include "..\Module.hpp"
 
+#include <glm/vec2.hpp>
+using glm::uvec2;
+
 namespace Meridian
 {
 	/*==============================================================================================================
@@ -24,6 +27,9 @@ namespace Meridian
 	==============================================================================================================*/
 	class InputManager : public IModule
 	{
+	public:///Friendly Internal Forward Declarations
+		friend class MeridianEngine;
+
 	private:///Constructors/Destructors
 
 		InputManager();
@@ -45,7 +51,10 @@ namespace Meridian
 
 	public:///Input utilities
 
+		const uvec2 & GetMousePosition() const;
 		
 	private:
+
+		uvec2 m_mousePosition;
 	};
 }

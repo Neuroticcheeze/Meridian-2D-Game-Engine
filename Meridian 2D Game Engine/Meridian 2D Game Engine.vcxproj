@@ -71,13 +71,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>Bin\$(Configuration)\</OutDir>
     <IntDir>Bin\Inter\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)\Meridian 2D Game Engine\Dep\STB-2.26;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLM-0.9.7.2\glm;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\include\GLFW;$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\inc;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Meridian 2D Game Engine\Dep\STB-2.26;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLM-0.9.7.2;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\include\GLFW;$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\inc;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\src\$(Configuration);$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>Bin\$(Configuration)\</OutDir>
     <IntDir>Bin\Inter\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)\Meridian 2D Game Engine\Dep\STB-2.26;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLM-0.9.7.2\glm;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\include\GLFW;$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\inc;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Meridian 2D Game Engine\Dep\STB-2.26;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLM-0.9.7.2;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\include\GLFW;$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\inc;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\src\$(Configuration);$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
