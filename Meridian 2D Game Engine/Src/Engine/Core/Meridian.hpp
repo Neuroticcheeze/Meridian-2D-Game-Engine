@@ -25,6 +25,12 @@
 using std::vector;
 using std::is_base_of;
 
+//=============== Third-Party Declarations ===============
+
+struct GLFWwindow;
+
+//========================================================
+
 namespace Meridian
 {
 	//External Forward Declarations
@@ -74,9 +80,18 @@ namespace Meridian
 			m_modules.push_back(module);
 		}
 
+		template <typename T>
+		T * GetModule(const int & p_index)
+		{
+			static_assert(std::is_base_of<IModule, T>::value, "T must derive from IModule");
+
+			return *(m_modules.data() + p_index);
+		}
+
 	private:///Member Fields
 		bool m_isRunning, m_isInitialised;
 		vector<IModule *> m_modules;
+		GLFWwindow * m_window;
 	};
 
 	/*====================================================================================================================

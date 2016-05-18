@@ -11,9 +11,12 @@
 #include "Meridian.hpp"
 #include "Module\Module.hpp"
 
+#include <gl_core_4_4.h>
 #include <assert.h>
 #include <glfw3.h>
 #include <Windows.h>
+#include <glm\glm.hpp>
+using glm::min;
 
 using namespace Meridian;
 
@@ -39,7 +42,15 @@ void MeridianEngine::Load()
 	if (glfwInit() == GL_TRUE)
 	{
 		m_isInitialised = true;
+
+		if ((m_window = glfwCreateWindow(640, 480, "Meridian-2D Game", nullptr, nullptr)) == nullptr)
+			Terminate();
 	}
+
+	glfwMakeContextCurrent(m_window);
+
+	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
+		Terminate();
 }
 
 void MeridianEngine::Run(const GameLoopMode & p_mode)
@@ -62,7 +73,7 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 	}
 	else
 	{
-		m_targetFramerate = lpDevMode.dmDisplayFrequency;
+		m_targetFramerate = static_cast<float>(lpDevMode.dmDisplayFrequency);
 	}
 
 	float m_target = 1000.0F / m_targetFramerate;
@@ -92,7 +103,7 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 
 		if (m_remainder > 0)
 		{
-			Sleep(m_remainder);
+			Sleep(static_cast<DWORD>(m_remainder));
 		}
 
 		else
@@ -106,6 +117,7 @@ void MeridianEngine::Unload()
 {
 	if (m_isInitialised)
 	{
+		glfwDestroyWindow(m_window);
 		glfwTerminate();
 	}
 
