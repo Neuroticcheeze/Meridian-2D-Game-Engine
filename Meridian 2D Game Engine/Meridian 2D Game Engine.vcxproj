@@ -71,14 +71,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>Bin\$(Configuration)\</OutDir>
     <IntDir>Bin\Inter\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)\Meridian 2D Game Engine\Dep\GLCORE-4.4;$(SolutionDir)\Meridian 2D Game Engine\Dep\STB-2.26;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLM-0.9.7.2;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\include\GLFW;$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\src\$(Configuration);$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\Meridian 2D Game Engine\Dep\GLCORE-4.4;$(SolutionDir)\Meridian 2D Game Engine\Dep\RAKNET-4.081\include;$(SolutionDir)\Meridian 2D Game Engine\Dep\STB-2.26;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLM-0.9.7.2;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\include\GLFW;$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Meridian 2D Game Engine\Dep\RAKNET-4.081\lib;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\src\$(Configuration);$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>Bin\$(Configuration)\</OutDir>
     <IntDir>Bin\Inter\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)\Meridian 2D Game Engine\Dep\GLCORE-4.4;$(SolutionDir)\Meridian 2D Game Engine\Dep\STB-2.26;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLM-0.9.7.2;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\include\GLFW;$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\src\$(Configuration);$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\Meridian 2D Game Engine\Dep\GLCORE-4.4;$(SolutionDir)\Meridian 2D Game Engine\Dep\RAKNET-4.081\include;$(SolutionDir)\Meridian 2D Game Engine\Dep\STB-2.26;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLM-0.9.7.2;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\include\GLFW;$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Meridian 2D Game Engine\Dep\RAKNET-4.081\lib;$(SolutionDir)\Meridian 2D Game Engine\Dep\GLFW-3.1.2\src\$(Configuration);$(SolutionDir)\Meridian 2D Game Engine\Dep\FMOD-1.0.8\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -88,7 +88,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;raknet_d.lib;fmodL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -109,7 +109,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;raknet.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
