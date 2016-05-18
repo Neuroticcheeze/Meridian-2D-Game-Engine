@@ -128,12 +128,14 @@
   <ItemGroup>
     <ClCompile Include="Dep\GLCORE-4.4\gl_core_4_4.c" />
     <ClCompile Include="Src\Engine\Core\Meridian.cpp" />
+    <ClCompile Include="Src\Engine\Core\Module\Managers\ModuleGraphics.cpp" />
     <ClCompile Include="Src\Engine\Core\Module\Module.cpp" />
     <ClCompile Include="Src\Engine\Core\Module\Managers\ModuleInput.cpp" />
     <ClCompile Include="Src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Engine\Core\Meridian.hpp" />
+    <ClInclude Include="Src\Engine\Core\Module\Managers\ModuleGraphics.hpp" />
     <ClInclude Include="Src\Engine\Core\Module\Module.hpp" />
     <ClInclude Include="Src\Engine\Core\Module\Managers\ModuleInput.hpp" />
   </ItemGroup>

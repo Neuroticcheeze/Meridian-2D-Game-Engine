@@ -26,10 +26,14 @@
     <ClCompile Include="Dep\GLCORE-4.4\gl_core_4_4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Engine\Core\Module\Managers\ModuleGraphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Engine\Core\Module\Module.hpp" />
     <ClInclude Include="Src\Engine\Core\Module\Managers\ModuleInput.hpp" />
     <ClInclude Include="Src\Engine\Core\Meridian.hpp" />
+    <ClInclude Include="Src\Engine\Core\Module\Managers\ModuleGraphics.hpp" />
   </ItemGroup>
 </Project>
