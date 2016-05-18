@@ -17,6 +17,7 @@
 
 #pragma once
 
+//TODO: Remove?
 #define REQUIRE_MODULE(module0) __if_not_exists(module0) { }
 
 
@@ -74,7 +75,7 @@ namespace Meridian
 		}
 
 	private:///Member Fields
-		bool m_isRunning;
+		bool m_isRunning, m_isInitialised;
 		vector<IModule *> m_modules;
 	};
 

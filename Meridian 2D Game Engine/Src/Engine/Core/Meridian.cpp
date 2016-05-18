@@ -18,23 +18,35 @@
 using namespace Meridian;
 
 MeridianEngine::MeridianEngine() :
-	m_isRunning(false)
+	m_isRunning(false),
+	m_isInitialised(false)
 {
 
 }
 
 MeridianEngine::~MeridianEngine()
 {
+	for (auto module : m_modules)
+	{
+		delete module;
+	}
 
+	m_modules.clear();
 }
 
 void MeridianEngine::Load()
 {
-
+	if (glfwInit() == GL_TRUE)
+	{
+		m_isInitialised = true;
+	}
 }
 
 void MeridianEngine::Run(const GameLoopMode & p_mode)
 {
+	//TODO: Neaten up and make input run as fast as possible, update run at a fixed framerate, and render fixed at the refresh rate.
+	//TODO: Make p_mode actually DO something...
+
 	m_isRunning = true;
 
 	float m_targetFramerate;
@@ -53,9 +65,6 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 		m_targetFramerate = lpDevMode.dmDisplayFrequency;
 	}
 
-
-
-
 	float m_target = 1000.0F / m_targetFramerate;
 	float m_invTarget = m_targetFramerate / 1000.0F;
 
@@ -68,9 +77,11 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 
 		//Loop
 		printf("Capped FPS: %f, True FPS: %f\n", min(1.0F / m_duration, m_targetFramerate), 1.0F / m_duration);
+		
 		for (auto module : m_modules)
 		{
 			module->Update(m_deltaTime);
+			module->Render();
 		}
 
 		m_finishTime = (float)glfwGetTime();
@@ -93,6 +104,12 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 
 void MeridianEngine::Unload()
 {
+	if (m_isInitialised)
+	{
+		glfwTerminate();
+	}
+
+	m_isInitialised = false;
 }
 
 void MeridianEngine::Terminate()
