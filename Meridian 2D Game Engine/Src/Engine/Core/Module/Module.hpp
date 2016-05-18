@@ -23,9 +23,12 @@ namespace Meridian
 	============================================================*/
 	class IModule
 	{
-	protected:///Constructors/Destructors
+	protected:///Constructor
 
 		IModule();
+
+	public:///Destructor
+
 		virtual ~IModule();
 
 	public:///Member Functions
