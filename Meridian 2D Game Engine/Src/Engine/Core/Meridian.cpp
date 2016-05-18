@@ -66,6 +66,9 @@ void MeridianEngine::Load()
 	{
 		module->Initialise(this);
 	}
+
+	if (m_preHook != nullptr)
+		m_preHook(this);
 }
 
 void MeridianEngine::Run(const GameLoopMode & p_mode)
@@ -110,6 +113,9 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 			module->Update(this, m_deltaTime);
 			module->Render(this);
 		}
+
+		if (m_loopHook != nullptr)
+			m_loopHook(this, m_deltaTime);
 		//==================================
 
 		m_finishTime = (float)glfwGetTime();
@@ -136,6 +142,9 @@ void MeridianEngine::Unload()
 	if (!m_isInitialised)
 		return;
 
+	//Run the hook and give it free reign with the engine before breaking anything.
+	if (m_postHook != nullptr)
+		m_postHook(this);
 
 	//Finalise all attached modules.
 	for (auto module : m_modules)
@@ -156,3 +165,7 @@ void MeridianEngine::Terminate()
 	//Kill the game loop by the next iteration.
 	m_isRunning = false;
 }
+
+void MeridianEngine::HookToPreEvent(OnEnginePre p_event) { m_preHook = p_event; }
+void MeridianEngine::HookToLoopEvent(OnEngineLoop p_event) { m_loopHook = p_event; }
+void MeridianEngine::HookToPostEvent(OnEnginePost p_event) { m_postHook = p_event; }

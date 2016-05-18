@@ -14,6 +14,9 @@
 //					-AddModule
 //					-GetModule
 //					-GetWindow
+//					-HookToPreEvent
+//					-HookToLoopEvent
+//					-HookToPostEvent
 //
 ===================================================================*/
 
@@ -37,6 +40,12 @@ namespace Meridian
 {
 	//External Forward Declarations
 	class IModule;
+	class MeridianEngine;
+
+	//Engine Event Callbacks
+	typedef void(*OnEnginePre)(MeridianEngine * p_engine);
+	typedef void(*OnEngineLoop)(MeridianEngine * p_engine, const float & p_dt);
+	typedef void(*OnEnginePost)(MeridianEngine * p_engine);
 
 	/*====================================================================================================================
 	The engine object itself; responsible for initialising all modules, running the game loop, and releasing all modules.
@@ -81,24 +90,40 @@ namespace Meridian
 			T* module = new T;
 			m_modules.push_back(module);
 		}
-
+			
+			/*Get a module from the list given the index which corresponds to the order that the module was added in.*/
 		template <typename T>
 		inline T * GetModule(const int & p_index)
 		{
 			static_assert(std::is_base_of<IModule, T>::value, "T must derive from IModule");
 
-			return *(m_modules.data() + p_index);
+			return static_cast<T*>(m_modules[p_index]);
 		}
 
+			/*Get a handle to the main game window.*/
 		inline GLFWwindow * GetWindow()
 		{
 			return m_window;
 		}
+			/*Hook a callback function to the initialisation event inside the engine.*/
+		void HookToPreEvent(OnEnginePre p_event);
+
+			/*Hook a callback function to the game-loop update event inside the engine.*/
+		void HookToLoopEvent(OnEngineLoop p_event);
+
+			/*Hook a callback function to the finalisation event inside the engine.*/
+		void HookToPostEvent(OnEnginePost p_event);
+
 
 	private:///Member Fields
+
 		bool m_isRunning, m_isInitialised;
 		vector<IModule *> m_modules;
 		GLFWwindow * m_window;
+
+		OnEnginePre m_preHook;
+		OnEngineLoop m_loopHook;
+		OnEnginePost m_postHook;
 	};
 
 	/*====================================================================================================================

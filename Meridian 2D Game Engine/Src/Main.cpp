@@ -7,6 +7,14 @@ void main()
 
 	Meridian::MeridianEngine *engine = new Meridian::MeridianEngine();
 
+	engine->HookToLoopEvent([]
+		(Meridian::MeridianEngine * engine, const float & dt) 
+		{
+			const uvec2 & pos = engine->GetModule<Meridian::InputManager>(0)->GetMousePosition();
+			printf("Mouse pos: [%u, %u]\n", pos.x, pos.y);
+		}
+	);
+
 	/*Only need a module/manager for:
 	
 	Input
@@ -16,10 +24,7 @@ void main()
 	Networking
 	AI
 	*/
-	for (int n = 0; n < 6; ++n)
 	engine->AddModule<Meridian::InputManager>();
-	
-	//__if_not_exists(e) { static_assert(false, "'e' does not exist."); };
 
 	engine->Load();
 	engine->Run(Meridian::MeridianEngine::GameLoopMode::VARIABLE);
