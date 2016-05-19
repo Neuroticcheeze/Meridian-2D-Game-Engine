@@ -10,6 +10,7 @@
 //					-Implements IModule
 //					-LoadResources
 //					-GetPath
+//					-GetAsset
 //					-CreateAsset
 //
 ===================================================================*/
@@ -24,6 +25,9 @@ using std::vector;
 
 #include <string>
 using std::string;
+
+#include <unordered_map>
+using std::unordered_map;
 
 #ifdef _DEBUG
 #define RESOURCE_PATH "Res/"
@@ -73,11 +77,28 @@ namespace Meridian
 			/*Get the path to all of our resources given a subdirectory too.*/
 		string GetPath(const char * p_subdir = nullptr) const;
 
+			/*Get the asset by the specified identifier given to it during CreateAsset*/
+		template <typename T>
+		inline bool GetAsset(const char * p_identifier, T & p_asset)
+		{
+			static_assert(std::is_base_of<IAsset, T>::value, "T must derive from IAsset");
+
+			auto it = m_loadedAssets.find(string(p_identifier));
+
+			if (it != m_loadedAssets.end())
+			{
+				p_asset = it->second;
+				return true;
+			}
+
+			return false;
+		}
+
 			/*Creates an asset from some resource data defined in the doc. (For example: filepaths, width, size).
 			What is required varies for each type of asset. This function does nothing in release mode since the
 			engine switches this out for the resource file it creates from your assets during development (debug).*/
 		template<typename T, typename ... Args>
-		void CreateAsset(Args ... p_args)
+		inline void CreateAsset(Args ... p_args)
 		{
 #ifdef _DEBUG
 
@@ -96,14 +117,14 @@ namespace Meridian
 	private:///Resource utilities
 
 		template<typename T, typename ... Args>
-		void Args_CreateAsset(vector<RawProperty> & p_properties, T p_val, Args ... p_args)
+		inline void Args_CreateAsset(vector<RawProperty> & p_properties, T p_val, Args ... p_args)
 		{
 			Args_CreateAsset(p_properties, p_val);
 			Args_CreateAsset(p_properties, p_args ...);
 		}
 
 		template<typename T>
-		void Args_CreateAsset(vector<RawProperty> & p_properties, T p_val)
+		inline void Args_CreateAsset(vector<RawProperty> & p_properties, T p_val)
 		{
 			p_properties.push_back(RawProperty().Set(p_val));
 		}
@@ -112,5 +133,7 @@ namespace Meridian
 	private:///Member Fields
 
 		string m_rootPath;
+
+		unordered_map<string, IAsset> m_loadedAssets;
 	};
 }
