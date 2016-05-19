@@ -98,11 +98,16 @@ namespace Meridian
 			What is required varies for each type of asset. This function does nothing in release mode since the
 			engine switches this out for the resource file it creates from your assets during development (debug).*/
 		template<typename T, typename ... Args>
-		inline void CreateAsset(const char * p_identifier, Args ... p_args)
+		inline bool CreateAsset(const char * p_identifier, Args ... p_args)
 		{
 #ifdef _DEBUG
 
 			static_assert(std::is_base_of<IAsset, T>::value, "T must derive from IAsset");
+
+			auto it = m_loadedAssets.find(string(p_identifier));
+
+			if (it != m_loadedAssets.end())
+				return false;	//TODO: print error message to prompt a delete of this asset before this can work.
 
 			vector<RawProperty> properties;
 
@@ -111,7 +116,9 @@ namespace Meridian
 			T * asset = new T();
 			asset->Load(properties.data());
 
-			m_loadedAssets[string(p_identifier)] = asset;
+			it->second = asset;
+
+			return true;
 #endif
 		}
 
