@@ -79,7 +79,7 @@ namespace Meridian
 
 			/*Get the asset by the specified identifier given to it during CreateAsset*/
 		template <typename T>
-		inline bool GetAsset(const char * p_identifier, T & p_asset)
+		inline bool GetAsset(const char * p_identifier, T * p_asset)
 		{
 			static_assert(std::is_base_of<IAsset, T>::value, "T must derive from IAsset");
 
@@ -98,7 +98,7 @@ namespace Meridian
 			What is required varies for each type of asset. This function does nothing in release mode since the
 			engine switches this out for the resource file it creates from your assets during development (debug).*/
 		template<typename T, typename ... Args>
-		inline void CreateAsset(Args ... p_args)
+		inline void CreateAsset(const char * p_identifier, Args ... p_args)
 		{
 #ifdef _DEBUG
 
@@ -108,8 +108,10 @@ namespace Meridian
 
 			Args_CreateAsset(properties, p_args ...);
 
-			T asset;
-			asset.Load(properties.data());
+			T * asset = new T();
+			asset->Load(properties.data());
+
+			m_loadedAssets[string(p_identifier)] = asset;
 #endif
 		}
 
@@ -134,6 +136,6 @@ namespace Meridian
 
 		string m_rootPath;
 
-		unordered_map<string, IAsset> m_loadedAssets;
+		unordered_map<string, IAsset*> m_loadedAssets;
 	};
 }
