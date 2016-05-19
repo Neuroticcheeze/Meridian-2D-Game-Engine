@@ -25,6 +25,11 @@ namespace Meridian
 	=============================================================================*/
 	class AssetTexture : public IAsset
 	{
+	public:///Static Members
+
+		/*Missing texture used to replace textures that are invalid due to a runtime issue, or missing/corrupt file.*/
+		static const AssetTexture MISSING_TEXTURE;
+
 	public:///Friendly Internal Forward Declarations
 
 		friend class ResourceManager;
@@ -32,6 +37,8 @@ namespace Meridian
 	private:///Constructors/Destructors
 
 		AssetTexture();
+		AssetTexture(const AssetTexture & p_other);
+		AssetTexture(const unsigned short & p_width, const unsigned short & p_height, const byte & p_channels, const byte * p_pixelData);
 		~AssetTexture();
 
 #ifdef _DEBUG
@@ -54,5 +61,6 @@ namespace Meridian
 		unsigned short m_width;
 		unsigned short m_height;
 		byte m_channels;
+		byte * m_pixelData;
 	};
 }
