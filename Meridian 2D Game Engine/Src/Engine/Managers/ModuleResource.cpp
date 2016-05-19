@@ -38,3 +38,8 @@ void ResourceManager::Finalise(MeridianEngine * p_engine)
 {
 
 }
+
+void ResourceManager::LoadResources()
+{
+
+}

@@ -8,6 +8,8 @@
 //
 //Objects:		ResourceManager
 //					-Implements IModule
+//					-LoadResource
+//					-CreateAsset
 //
 ===================================================================*/
 
@@ -52,6 +54,9 @@ namespace Meridian
 		void Finalise(MeridianEngine * p_engine);
 
 	public:///Resource utilities
+
+			/*Used always (debug + release) to load any serialised assets from the binary resource file.*/
+		void LoadResources();
 
 			/*Creates an asset from some resource data defined in the doc. (For example: filepaths, width, size).
 			What is required varies for each type of asset. This function does nothing in release mode since the
