@@ -48,4 +48,9 @@
     <ClInclude Include="Src\Engine\Assets\AssetTexture.hpp" />
     <ClInclude Include="Src\Engine\Managers\ModuleResource.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\test.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

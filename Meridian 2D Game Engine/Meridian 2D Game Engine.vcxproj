@@ -145,6 +145,9 @@
     <ClInclude Include="Src\Engine\Managers\ModuleInput.hpp" />
     <ClInclude Include="Src\Engine\Managers\ModuleResource.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\test.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
