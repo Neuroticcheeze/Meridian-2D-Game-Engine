@@ -8,6 +8,7 @@
 //
 //Objects:		InputManager
 //					-Implements IModule
+//					-GetMousePosition
 //
 ===================================================================*/
 
