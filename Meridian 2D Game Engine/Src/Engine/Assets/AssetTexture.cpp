@@ -24,7 +24,7 @@ AssetTexture::~AssetTexture()
 
 #ifdef _DEBUG
 
-void AssetTexture::Load(RawProperty * p_resources)
+void AssetTexture::Load(const RawProperty * p_resources)
 {
 	const char * path = p_resources[0].m_tag == RawProperty::STR ? p_resources[0].str : nullptr;
 

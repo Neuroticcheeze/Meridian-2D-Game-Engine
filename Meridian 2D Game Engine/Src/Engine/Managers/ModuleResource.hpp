@@ -72,7 +72,7 @@ namespace Meridian
 
 			Args_CreateAsset(properties, p_args ...);
 
-			IAsset asset = T();
+			T asset;
 			asset.Load(properties.data());
 #endif
 		}
