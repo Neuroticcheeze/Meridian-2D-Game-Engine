@@ -133,6 +133,7 @@
     <ClCompile Include="Src\Engine\Managers\ModuleGraphics.cpp" />
     <ClCompile Include="Src\Engine\Core\Module.cpp" />
     <ClCompile Include="Src\Engine\Managers\ModuleInput.cpp" />
+    <ClCompile Include="Src\Engine\Managers\ModuleResource.cpp" />
     <ClCompile Include="Src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +143,7 @@
     <ClInclude Include="Src\Engine\Managers\ModuleGraphics.hpp" />
     <ClInclude Include="Src\Engine\Core\Module.hpp" />
     <ClInclude Include="Src\Engine\Managers\ModuleInput.hpp" />
+    <ClInclude Include="Src\Engine\Managers\ModuleResource.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
