@@ -27,7 +27,7 @@ namespace Meridian
 	
 		friend class MeridianEngine;
 
-	protected:///Constructor/Destructor
+	public:///Constructor/Destructor
 
 		IModule();
 		virtual ~IModule();

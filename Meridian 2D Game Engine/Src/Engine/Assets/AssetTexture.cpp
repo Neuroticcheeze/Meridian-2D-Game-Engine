@@ -16,41 +16,19 @@
 
 using namespace Meridian;
 
-const byte checker[12] = { 0, 0, 0, 255, 0, 255, 255, 0, 255, 0, 0, 0 };
-const AssetTexture AssetTexture::MISSING_TEXTURE(2, 2, 3, checker);
+const AssetTexture AssetTexture::MISSING_TEXTURE(2, 2, 3, { 0, 0, 0, 255, 0, 255, 255, 0, 255, 0, 0, 0 });
 
-AssetTexture::AssetTexture() : 
-	AssetTexture(0, 0, 0, nullptr)
-{
-
-}
-
-AssetTexture::AssetTexture(const AssetTexture & p_other) :
-	AssetTexture(p_other.m_width, p_other.m_height, p_other.m_channels, p_other.m_pixelData)
-{
-
-}
-
-AssetTexture::AssetTexture(const unsigned short & p_width, const unsigned short & p_height, const byte & p_channels, const byte * p_pixelData) :
+AssetTexture::AssetTexture(const unsigned short & p_width, const unsigned short & p_height, const byte & p_channels, const vector<byte> p_pixelData) :
 	m_width(p_width),
 	m_height(p_height),
-	m_channels(p_channels)
+	m_channels(p_channels),
+	m_pixelData(p_pixelData)
 {
-	if (p_pixelData == nullptr)
-		m_pixelData = nullptr;
-
-	else
-	{
-		int size = p_channels * p_height * p_width;
-		m_pixelData = static_cast<byte*>(malloc(size));
-		memcpy_s(m_pixelData, size, p_pixelData, size);
-	}
 }
 
 AssetTexture::~AssetTexture()
 {
-	free(m_pixelData);
-	m_pixelData = nullptr;
+	m_pixelData.clear();
 	m_width = m_height = m_channels = 0;
 }
 
@@ -58,13 +36,13 @@ AssetTexture::~AssetTexture()
 
 void AssetTexture::Load(const RawProperty * p_resources)
 {
-	const char * path = p_resources[0].m_tag == RawProperty::STR ? p_resources[0].str : nullptr;
+	string path = p_resources[0].m_tag == RawProperty::STR ? p_resources[0].str : nullptr;
 
 	int width, height, bitdepth;
 
-	m_pixelData = stbi_load(path, &width, &height, &bitdepth, 0);
+	byte * data = stbi_load(path.c_str(), &width, &height, &bitdepth, 0);
 
-	if (m_pixelData == nullptr)
+	if (data == nullptr)
 	{
 		//TODO: error message
 		*this = AssetTexture::MISSING_TEXTURE;
@@ -75,11 +53,12 @@ void AssetTexture::Load(const RawProperty * p_resources)
 		m_width = static_cast<unsigned short>(width);
 		m_height = static_cast<unsigned short>(height);
 		m_channels = static_cast<byte>(bitdepth);
+		m_pixelData = vector<byte>(data, data + width * height * bitdepth);
 	}
 
 	else
 	{
-		stbi_image_free(m_pixelData);
+		stbi_image_free(data);
 	}
 }
 

@@ -9,6 +9,7 @@
 //Objects:		ResourceManager
 //					-Implements IModule
 //					-LoadResources
+//					-GetPath
 //					-CreateAsset
 //
 ===================================================================*/
@@ -20,6 +21,17 @@
 
 #include <vector>
 using std::vector;
+
+#include <string>
+using std::string;
+
+#ifdef _DEBUG
+#define RESOURCE_PATH "Res/"
+#else
+#define RESOURCE_PATH "data/"
+#endif
+
+typedef unsigned char byte;
 
 namespace Meridian
 {
@@ -58,6 +70,9 @@ namespace Meridian
 			/*Used always (debug + release) to load any serialised assets from the binary resource file.*/
 		void LoadResources();
 
+			/*Get the path to all of our resources given a subdirectory too.*/
+		string GetPath(const char * p_subdir = nullptr) const;
+
 			/*Creates an asset from some resource data defined in the doc. (For example: filepaths, width, size).
 			What is required varies for each type of asset. This function does nothing in release mode since the
 			engine switches this out for the resource file it creates from your assets during development (debug).*/
@@ -90,12 +105,12 @@ namespace Meridian
 		template<typename T>
 		void Args_CreateAsset(vector<RawProperty> & p_properties, T p_val)
 		{
-			RawProperty a;
-			a.Set(p_val);
-			p_properties.push_back(a);
+			p_properties.push_back(RawProperty().Set(p_val));
 		}
 #endif
 
 	private:///Member Fields
+
+		string m_rootPath;
 	};
 }

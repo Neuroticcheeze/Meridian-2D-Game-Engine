@@ -17,6 +17,9 @@
 
 #include "..\Core\Asset.hpp"
 
+#include <vector>
+using std::vector;
+
 namespace Meridian
 {
 	/*=============================================================================
@@ -25,6 +28,8 @@ namespace Meridian
 	=============================================================================*/
 	class AssetTexture : public IAsset
 	{
+	public:///Operator Overloads
+
 	public:///Static Members
 
 		/*Missing texture used to replace textures that are invalid due to a runtime issue, or missing/corrupt file.*/
@@ -34,12 +39,12 @@ namespace Meridian
 
 		friend class ResourceManager;
 
-	private:///Constructors/Destructors
+	public:///Constructors/Destructors
 
-		AssetTexture();
-		AssetTexture(const AssetTexture & p_other);
-		AssetTexture(const unsigned short & p_width, const unsigned short & p_height, const byte & p_channels, const byte * p_pixelData);
+		AssetTexture(const unsigned short & p_width = 0, const unsigned short & p_height = 0, const byte & p_channels = 0, const vector<byte> p_pixelData = {});
 		~AssetTexture();
+
+	private:///Member Functions
 
 #ifdef _DEBUG
 		/*Used in debug mode to read in raw resources (.png, .xml, .mp3, etc), including information
@@ -61,6 +66,6 @@ namespace Meridian
 		unsigned short m_width;
 		unsigned short m_height;
 		byte m_channels;
-		byte * m_pixelData;
+		vector<byte> m_pixelData;
 	};
 }

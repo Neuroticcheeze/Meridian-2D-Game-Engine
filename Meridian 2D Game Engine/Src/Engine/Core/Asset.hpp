@@ -28,6 +28,9 @@ typedef unsigned char byte;
 #include <assert.h>
 #include <Windows.h>
 
+#include <string>
+using std::string;
+
 namespace Meridian
 {
 	//External Forward Declarations
@@ -43,7 +46,7 @@ namespace Meridian
 
 		friend class ResourceManager;
 
-	protected:///Constructor/Destructor
+	public:///Constructor/Destructor
 
 		IAsset();
 		virtual ~IAsset();
@@ -138,9 +141,11 @@ namespace Meridian
 	struct RawProperty
 	{
 		enum { STR, CHAR, INT, FLOAT, U_INT, SHORT, U_SHORT, LONG, U_LONG } m_tag;
+
+		string str;
+
 		union
 		{
-			char* str = nullptr;
 			char c;
 			int i;
 			float f;
@@ -151,20 +156,8 @@ namespace Meridian
 			unsigned long u_l;
 		};
 
-		void Set(const char * p_str)
-		{
-			if (p_str == nullptr)
-				return;
-
-			int size = strlen(p_str) + 1;
-
-			free(str);
-			str = static_cast<char*>(malloc(size));
-			strncpy_s(str, size, p_str, _TRUNCATE);
-
-			m_tag = STR;
-		}
-
+		RawProperty & Set(const char * p_str)	{ m_tag = STR;		str = p_str;	return *this; }
+		RawProperty & Set(string p_str)			{ m_tag = STR;		str = p_str;	return *this; }
 		RawProperty & Set(char p_c)				{ m_tag = CHAR;		c	= p_c;		return *this; }
 		RawProperty & Set(int p_i)				{ m_tag = INT;		i	= p_i;		return *this; }
 		RawProperty & Set(float p_f)			{ m_tag = FLOAT;	f	= p_f;		return *this; }
@@ -173,5 +166,8 @@ namespace Meridian
 		RawProperty & Set(unsigned short p_u_s)	{ m_tag = U_SHORT;	u_s	= p_u_s;	return *this; }
 		RawProperty & Set(long p_l)				{ m_tag = LONG;		l	= p_l;		return *this; }
 		RawProperty & Set(unsigned long p_u_l)	{ m_tag = U_LONG;	u_l	= p_u_l;	return *this; }
+
+		RawProperty() {}
+		~RawProperty() {}
 	};
 }

@@ -13,11 +13,10 @@ void main()
 	engine->HookToPreEvent([]
 		(Meridian::MeridianEngine * engine)
 		{
-			engine->GetModule<Meridian::ResourceManager>(2)->CreateAsset<Meridian::AssetTexture>("assets/textures/sky0.png");
-			engine->GetModule<Meridian::ResourceManager>(2)->CreateAsset<Meridian::AssetTexture>("assets/textures/sky1.png");
-			engine->GetModule<Meridian::ResourceManager>(2)->CreateAsset<Meridian::AssetTexture>("assets/textures/sky2.png");
+			auto resourceManager = engine->GetModule<Meridian::ResourceManager>(2);
+			resourceManager->CreateAsset<Meridian::AssetTexture>(resourceManager->GetPath("test.png"));
 
-			engine->GetModule<Meridian::ResourceManager>(2)->LoadResources();
+			resourceManager->LoadResources();
 		}
 	);
 

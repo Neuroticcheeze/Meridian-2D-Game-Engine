@@ -16,6 +16,7 @@ using namespace Meridian;
 
 ResourceManager::ResourceManager()
 {
+	m_rootPath = RESOURCE_PATH;
 }
 
 ResourceManager::~ResourceManager()
@@ -42,4 +43,9 @@ void ResourceManager::Finalise(MeridianEngine * p_engine)
 void ResourceManager::LoadResources()
 {
 
+}
+
+string ResourceManager::GetPath(const char * p_subdir) const
+{
+	return m_rootPath + (p_subdir + (*p_subdir == '/' || *p_subdir == '\\' ? 1 : 0));
 }
