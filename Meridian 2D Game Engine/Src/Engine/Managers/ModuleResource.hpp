@@ -101,6 +101,8 @@ namespace Meridian
 		inline bool CreateAsset(const char * p_identifier, Args ... p_args)
 		{
 #ifdef _DEBUG
+			
+			assert(strlen(p_identifier) <= 16);
 
 			static_assert(std::is_base_of<IAsset, T>::value, "T must derive from IAsset");
 

@@ -11,6 +11,10 @@
 #include "ModuleResource.hpp"
 #include "..\Core\Meridian.hpp"
 #include <glfw3.h>
+#include <fstream>
+using std::ifstream;
+using std::streampos;
+using std::ios;
 
 using namespace Meridian;
 
@@ -42,7 +46,37 @@ void ResourceManager::Finalise(MeridianEngine * p_engine)
 
 void ResourceManager::LoadResources()
 {
+	ifstream file(GetPath("arch/resource.bin"), ifstream::binary);
 
+	//Get the size of the memory block and reset the pointer in the stream to 0
+	std::streampos fsize = 0;
+	fsize = file.tellg();
+	file.seekg(0, ios::end);
+	fsize = file.tellg() - fsize;
+	file.clear();
+	file.seekg(0, ifstream::beg);
+
+	//The buffer as chars to be conv'd to floats later
+	char * data = static_cast<char*>(malloc(fsize));
+
+	if (!file.is_open())
+		return;
+	//TODO: print error that resource file couldn't be found.
+
+	file.read(data, fsize);
+	file.close();
+
+	/*block layout:
+
+	Block Header:
+		4 bytes = block size
+		16 bytes = asset name
+		1 byte = asset type + any flags in last 4 bits?
+
+		Asset Header:
+			# bytes for each property spec.
+			# bytes for potential "main data block"
+	*/
 }
 
 string ResourceManager::GetPath(const char * p_subdir) const
