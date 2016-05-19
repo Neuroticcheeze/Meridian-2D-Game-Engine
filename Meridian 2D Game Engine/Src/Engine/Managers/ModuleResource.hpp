@@ -51,6 +51,14 @@ namespace Meridian
 		void Finalise(MeridianEngine * p_engine);
 
 	public:///Resource utilities
+
+			/*Creates an asset from some resource data defined in the doc. (For example: filepaths, width, size).
+			What is required varies for each type of asset.*/
+		template<typename T, typename ... Args>
+		void CreateAsset(Args ... p_args)
+		{
+
+		}
 		
 	private:///Member Fields
 	};

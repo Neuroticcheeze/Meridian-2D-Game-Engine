@@ -4,42 +4,37 @@
 //			(See included file MERIDIAN_LICENSE.txt)
 -------------------------------------------------------------------
 //
-//Source File:	ModuleGraphics.cpp
+//Source File:	ModuleResource.cpp
 //
 ===================================================================*/
 
-#include "ModuleGraphics.hpp"
+#include "ModuleResource.hpp"
 #include "..\Core\Meridian.hpp"
 #include <glfw3.h>
 
 using namespace Meridian;
 
-GraphicsManager::GraphicsManager()
+ResourceManager::ResourceManager()
 {
 }
 
-GraphicsManager::~GraphicsManager()
-{
-
-}
-
-void GraphicsManager::Initialise(MeridianEngine * p_engine)
-{
-
-}
-
-void GraphicsManager::Update(MeridianEngine * p_engine, const float & p_dt)
+ResourceManager::~ResourceManager()
 {
 }
 
-void GraphicsManager::Render(MeridianEngine * p_engine)
+void ResourceManager::Initialise(MeridianEngine * p_engine)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glfwSwapBuffers(p_engine->GetWindow());
 }
 
-void GraphicsManager::Finalise(MeridianEngine * p_engine)
+void ResourceManager::Update(MeridianEngine * p_engine, const float & p_dt)
+{
+}
+
+void ResourceManager::Render(MeridianEngine * p_engine)
+{
+}
+
+void ResourceManager::Finalise(MeridianEngine * p_engine)
 {
 
 }
