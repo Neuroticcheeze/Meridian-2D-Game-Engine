@@ -156,11 +156,11 @@ namespace Meridian
 			if (p_str == nullptr)
 				return;
 
-			int size = strlen(p_str);
+			int size = strlen(p_str) + 1;
 
 			free(str);
 			str = static_cast<char*>(malloc(size));
-			strcpy_s(str, size, p_str);
+			strncpy_s(str, size, p_str, _TRUNCATE);
 		}
 
 		RawProperty & Set(char p_c)				{ c		= p_c;		return *this; }

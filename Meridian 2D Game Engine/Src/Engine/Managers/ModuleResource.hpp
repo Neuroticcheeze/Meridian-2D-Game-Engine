@@ -85,7 +85,9 @@ namespace Meridian
 		template<typename T>
 		void Args_CreateAsset(vector<RawProperty> & p_properties, T p_val)
 		{
-			p_properties.push_back(RawProperty().Set(p_val));
+			RawProperty a;
+			a.Set(p_val);
+			p_properties.push_back(a);
 		}
 #endif
 
