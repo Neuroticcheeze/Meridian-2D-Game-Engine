@@ -161,15 +161,17 @@ namespace Meridian
 			free(str);
 			str = static_cast<char*>(malloc(size));
 			strncpy_s(str, size, p_str, _TRUNCATE);
+
+			m_tag = STR;
 		}
 
-		RawProperty & Set(char p_c)				{ c		= p_c;		return *this; }
-		RawProperty & Set(int p_i)				{ i		= p_i;		return *this; }
-		RawProperty & Set(float p_f)			{ f		= p_f;		return *this; }
-		RawProperty & Set(unsigned int p_u_i)	{ u_i	= p_u_i;	return *this; }
-		RawProperty & Set(short p_s)			{ s		= p_s;		return *this; }
-		RawProperty & Set(unsigned short p_u_s)	{ u_s	= p_u_s;	return *this; }
-		RawProperty & Set(long p_l)				{ l		= p_l;		return *this; }
-		RawProperty & Set(unsigned long p_u_l)	{ u_l	= p_u_l;	return *this; }
+		RawProperty & Set(char p_c)				{ m_tag = CHAR;		c	= p_c;		return *this; }
+		RawProperty & Set(int p_i)				{ m_tag = INT;		i	= p_i;		return *this; }
+		RawProperty & Set(float p_f)			{ m_tag = FLOAT;	f	= p_f;		return *this; }
+		RawProperty & Set(unsigned int p_u_i)	{ m_tag = U_INT;	u_i	= p_u_i;	return *this; }
+		RawProperty & Set(short p_s)			{ m_tag = SHORT;	s	= p_s;		return *this; }
+		RawProperty & Set(unsigned short p_u_s)	{ m_tag = U_SHORT;	u_s	= p_u_s;	return *this; }
+		RawProperty & Set(long p_l)				{ m_tag = LONG;		l	= p_l;		return *this; }
+		RawProperty & Set(unsigned long p_u_l)	{ m_tag = U_LONG;	u_l	= p_u_l;	return *this; }
 	};
 }
