@@ -22,7 +22,8 @@ AssetTexture::AssetTexture(const unsigned short & p_width, const unsigned short 
 	m_width(p_width),
 	m_height(p_height),
 	m_channels(p_channels),
-	m_pixelData(p_pixelData)
+	m_pixelData(p_pixelData),
+	m_glTextureHandle(0)
 {
 }
 

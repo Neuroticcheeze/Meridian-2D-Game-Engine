@@ -28,9 +28,7 @@ namespace Meridian
 	=============================================================================*/
 	class AssetTexture : public IAsset
 	{
-	public:///Operator Overloads
-
-	public:///Static Members
+	private:///Static Members
 
 		/*Missing texture used to replace textures that are invalid due to a runtime issue, or missing/corrupt file.*/
 		static const AssetTexture MISSING_TEXTURE;
@@ -38,6 +36,7 @@ namespace Meridian
 	public:///Friendly Internal Forward Declarations
 
 		friend class ResourceManager;
+		friend class GraphicsManager;
 
 	public:///Constructors/Destructors
 
@@ -67,5 +66,7 @@ namespace Meridian
 		unsigned short m_height;
 		byte m_channels;
 		vector<byte> m_pixelData;
+
+		unsigned int m_glTextureHandle;
 	};
 }
