@@ -8,7 +8,7 @@
 //
 //Objects:		ResourceManager
 //					-Implements IModule
-//					-LoadResource
+//					-LoadResources
 //					-CreateAsset
 //
 ===================================================================*/
