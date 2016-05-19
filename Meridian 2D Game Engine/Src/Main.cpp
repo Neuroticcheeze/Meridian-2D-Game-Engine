@@ -16,6 +16,8 @@ void main()
 			engine->GetModule<Meridian::ResourceManager>(2)->CreateAsset<Meridian::AssetTexture>("assets/textures/sky0.png");
 			engine->GetModule<Meridian::ResourceManager>(2)->CreateAsset<Meridian::AssetTexture>("assets/textures/sky1.png");
 			engine->GetModule<Meridian::ResourceManager>(2)->CreateAsset<Meridian::AssetTexture>("assets/textures/sky2.png");
+
+			engine->GetModule<Meridian::ResourceManager>(2)->LoadResources();
 		}
 	);
 

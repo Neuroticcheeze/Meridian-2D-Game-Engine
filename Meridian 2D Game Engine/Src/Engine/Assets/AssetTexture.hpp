@@ -39,7 +39,7 @@ namespace Meridian
 		about width, size, etc. It then fill this asset's members just like Decode does (instead from
 		the resource file). Once a resource file has been generated during development, this asset
 		will get its data from there instead.*/
-		void Load(RawProperty * p_resources);
+		void Load(const RawProperty * p_resources);
 
 		/*Used in debug mode to serialise its data into a buffer to be written to the game's
 		single resource file to be read in release build by Decode. Since the resource file is
@@ -54,6 +54,5 @@ namespace Meridian
 		unsigned short m_width;
 		unsigned short m_height;
 		byte m_channels;
-
 	};
 }
