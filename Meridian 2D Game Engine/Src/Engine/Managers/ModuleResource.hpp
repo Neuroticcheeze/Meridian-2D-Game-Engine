@@ -14,9 +14,10 @@
 #pragma once
 
 #include "..\Core\Module.hpp"
+#include "..\Core\Asset.hpp"
 
-#include <glm/vec2.hpp>
-using glm::uvec2;
+#include <vector>
+using std::vector;
 
 namespace Meridian
 {
@@ -53,13 +54,41 @@ namespace Meridian
 	public:///Resource utilities
 
 			/*Creates an asset from some resource data defined in the doc. (For example: filepaths, width, size).
-			What is required varies for each type of asset.*/
+			What is required varies for each type of asset. This function does nothing in release mode since the
+			engine switches this out for the resource file it creates from your assets during development (debug).*/
 		template<typename T, typename ... Args>
 		void CreateAsset(Args ... p_args)
 		{
+#ifdef _DEBUG
 
+			static_assert(std::is_base_of<IAsset, T>::value, "T must derive from IAsset");
+
+			vector<RawProperty> properties;
+
+			Args_CreateAsset(properties, p_args ...);
+
+			T asset;
+			//((IAsset)asset).Load();
+#endif
 		}
-		
+
+#ifdef _DEBUG
+	private:///Resource utilities
+
+		template<typename T, typename ... Args>
+		void Args_CreateAsset(vector<RawProperty> & p_properties, T p_val, Args ... p_args)
+		{
+			Args_CreateAsset(p_properties, p_val);
+			Args_CreateAsset(p_properties, p_args ...);
+		}
+
+		template<typename T>
+		void Args_CreateAsset(vector<RawProperty> & p_properties, T p_val)
+		{
+			p_properties.push_back(RawProperty().Set(p_val));
+		}
+#endif
+
 	private:///Member Fields
 	};
 }

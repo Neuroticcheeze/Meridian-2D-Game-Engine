@@ -26,7 +26,7 @@ AssetTexture::~AssetTexture()
 
 void AssetTexture::Load(RawProperty * p_resources)
 {
-	const char * path = p_resources[0].m_tag == RawProperty::C_STR ? p_resources[0].c_str : nullptr;
+	const char * path = p_resources[0].m_tag == RawProperty::STR ? p_resources[0].str : nullptr;
 
 
 }

@@ -84,7 +84,7 @@ namespace Meridian
 	public:///Member Functions
 
 			/*Get the size of this buffer in bytes.*/
-		inline const int & Size() const
+		inline int Size() const
 		{
 			return m_size;
 		}
@@ -137,17 +137,39 @@ namespace Meridian
 	==================================================================*/
 	struct RawProperty
 	{
-		enum { C_STR, CHAR, INT, FLOAT, U_INT, SHORT, U_SHORT, LONG, U_LONG } m_tag;
+		enum { STR, CHAR, INT, FLOAT, U_INT, SHORT, U_SHORT, LONG, U_LONG } m_tag;
 		union
 		{
-			const char* c_str;
+			char* str = nullptr;
 			char c;
 			int i;
+			float f;
 			unsigned int u_i;
 			short s;
 			unsigned short u_s;
 			long l;
 			unsigned long u_l;
 		};
+
+		void Set(const char * p_str)
+		{
+			if (p_str == nullptr)
+				return;
+
+			int size = strlen(p_str);
+
+			free(str);
+			str = static_cast<char*>(malloc(size));
+			strcpy_s(str, size, p_str);
+		}
+
+		RawProperty & Set(char p_c)				{ c		= p_c;		return *this; }
+		RawProperty & Set(int p_i)				{ i		= p_i;		return *this; }
+		RawProperty & Set(float p_f)			{ f		= p_f;		return *this; }
+		RawProperty & Set(unsigned int p_u_i)	{ u_i	= p_u_i;	return *this; }
+		RawProperty & Set(short p_s)			{ s		= p_s;		return *this; }
+		RawProperty & Set(unsigned short p_u_s)	{ u_s	= p_u_s;	return *this; }
+		RawProperty & Set(long p_l)				{ l		= p_l;		return *this; }
+		RawProperty & Set(unsigned long p_u_l)	{ u_l	= p_u_l;	return *this; }
 	};
 }
