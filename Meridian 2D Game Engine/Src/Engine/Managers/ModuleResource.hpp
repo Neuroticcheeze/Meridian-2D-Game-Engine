@@ -79,7 +79,7 @@ namespace Meridian
 
 			/*Get the asset by the specified identifier given to it during CreateAsset*/
 		template <typename T>
-		inline bool GetAsset(const char * p_identifier, T * p_asset)
+		inline bool GetAsset(const char * p_identifier, T ** p_asset)
 		{
 			static_assert(std::is_base_of<IAsset, T>::value, "T must derive from IAsset");
 
@@ -87,7 +87,7 @@ namespace Meridian
 
 			if (it != m_loadedAssets.end())
 			{
-				p_asset = it->second;
+				*p_asset = static_cast<T*>(it->second);
 				return true;
 			}
 
@@ -116,7 +116,7 @@ namespace Meridian
 			T * asset = new T();
 			asset->Load(properties.data());
 
-			it->second = asset;
+			m_loadedAssets[string(p_identifier)] = asset;
 
 			return true;
 #endif

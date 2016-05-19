@@ -14,7 +14,10 @@ void main()
 		(Meridian::MeridianEngine * engine)
 		{
 			auto resourceManager = engine->GetModule<Meridian::ResourceManager>(2);
-			resourceManager->CreateAsset<Meridian::AssetTexture>(resourceManager->GetPath("test.png"));
+			resourceManager->CreateAsset<Meridian::AssetTexture>("test_texture", resourceManager->GetPath("test.png"));
+
+			Meridian::AssetTexture * test = nullptr;
+			resourceManager->GetAsset("test_texture", &test);
 
 			resourceManager->LoadResources();
 		}
