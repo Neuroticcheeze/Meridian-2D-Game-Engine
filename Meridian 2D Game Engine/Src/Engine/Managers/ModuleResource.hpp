@@ -128,7 +128,11 @@ namespace Meridian
 			asset->Load(properties.data());
 
 			//Set the factory table with this type of asset.
-			m_factoryTable[asset->ID()] = [](IAsset ** p_val) { *p_val = new T(); };
+
+			auto & factoryAt = m_factoryTable[asset->ID()];
+
+			if (factoryAt == nullptr) 
+				factoryAt = [](IAsset ** p_val) { *p_val = new T(); };
 
 			return true;
 #endif

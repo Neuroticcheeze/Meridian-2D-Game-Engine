@@ -96,7 +96,7 @@ void ResourceManager::LoadResources()
 
 
 	//The buffer as chars to be conv'd to floats later
-	char * data = static_cast<char*>(malloc(fsize));
+	char * data = static_cast<char*>(malloc(static_cast<size_t>(fsize)));
 
 	file.read(data, fsize);
 	file.close();
