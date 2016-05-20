@@ -55,10 +55,11 @@ void ResourceManager::SaveResources()
 	struct
 	{
 		//blocksize + name	+ type	+ data
-		int c = 4	+ 16	+ 1		+ 1;
+		int c = 4	+ 16	+ 1		+ (2 + 2 + 1 + 255*255*4);
 		char name[16] = "apple_tree";
-		byte type = 2;
-		byte data[1] = {3};
+		byte type = 0;
+		byte data[5] = {1, 0, 1, 0, 4 };
+		byte pdata[4096];
 	} t;
 	file.write(reinterpret_cast<const char*>(&t), sizeof(t));
 
@@ -138,9 +139,12 @@ void ResourceManager::LoadResources()
 		buff.Reallocate(currentAssetSize);
 		memcpy_s(buff.Data(), currentAssetSize, data + blockStart + 4 + 16 + 1, currentAssetSize);
 
-		//TODO: factory create asset given the type (byte)
-		//TODO: call decode on asset.
-		//TODO: add asset to map with asset_name.
+		IAsset * newAsset = nullptr;
+		AssetFactoryGenerate(assetType, &newAsset);
+
+		newAsset->Decode(buff);
+
+		m_loadedAssets[string(assetName)] = newAsset;
 	}
 
 	//Release the memory we created.
@@ -150,4 +154,14 @@ void ResourceManager::LoadResources()
 string ResourceManager::GetPath(const char * p_subdir) const
 {
 	return m_rootPath + (p_subdir + (*p_subdir == '/' || *p_subdir == '\\' ? 1 : 0));
+}
+
+void ResourceManager::AssetFactoryGenerate(const byte & p_id, IAsset ** p_value)
+{
+	auto factory = m_factoryTable[p_id];
+
+	if (factory == nullptr)
+		return;
+
+	factory(p_value);
 }

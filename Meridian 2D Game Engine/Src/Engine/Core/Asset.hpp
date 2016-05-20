@@ -7,6 +7,7 @@
 //Header File:	Asset.hpp
 //
 //Objects:		IAsset
+//					-ID
 //					-Load
 //					-Encode
 //					-Decode
@@ -48,10 +49,13 @@ namespace Meridian
 
 	public:///Constructor/Destructor
 
-		IAsset();
+		IAsset(const byte & p_id);
 		virtual ~IAsset();
 
 	protected:///Member Functions
+
+			/*Get the id for this type of asset.*/
+		const byte & ID() const;
 
 #ifdef _DEBUG
 			/*Used in debug mode to read in raw resources (.png, .xml, .mp3, etc), including information 
@@ -67,6 +71,10 @@ namespace Meridian
 #endif
 			/*This function is always used to read from the resource file when the game starts up.*/
 		virtual void Decode(const SerialBuffer & p_buffer) = 0;
+
+	private:///Member Fields
+
+		byte m_id;
 	};
 
 

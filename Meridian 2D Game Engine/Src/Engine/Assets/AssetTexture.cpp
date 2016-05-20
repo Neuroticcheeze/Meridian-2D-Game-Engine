@@ -19,6 +19,9 @@ using namespace Meridian;
 const AssetTexture AssetTexture::MISSING_TEXTURE(2, 2, 3, { 0, 0, 0, 255, 0, 255, 255, 0, 255, 0, 0, 0 });
 
 AssetTexture::AssetTexture(const unsigned short & p_width, const unsigned short & p_height, const byte & p_channels, const vector<byte> p_pixelData) :
+
+	IAsset(0),
+
 	m_width(p_width),
 	m_height(p_height),
 	m_channels(p_channels),
@@ -83,17 +86,22 @@ void AssetTexture::Encode(SerialBuffer & p_buffer) const
 
 void AssetTexture::Decode(const SerialBuffer & p_buffer)
 {
-	int reqSize =
+	int reqSize_header =
 		sizeof(m_width) +					//Width
 		sizeof(m_height) +					//Height
-		sizeof(m_channels) +				//Number of colour channels
-		m_channels * m_width * m_height;	//Pixel data
+		sizeof(m_channels);					//Number of colour channels
 	
-	assert(p_buffer.Size() == reqSize);
-
+	assert(p_buffer.Size() == reqSize_header);
+	
 	memcpy_s(&m_width, sizeof(m_width), p_buffer.C_Data(0), sizeof(m_width));
 	memcpy_s(&m_height, sizeof(m_height), p_buffer.C_Data(sizeof(m_width)), sizeof(m_height));
 	memcpy_s(&m_channels, sizeof(m_channels), p_buffer.C_Data(sizeof(m_width) + sizeof(m_height)), sizeof(m_channels));
+
+	int reqSize_data = m_channels * m_width * m_height; //Pixel data
+
+	assert(p_buffer.Size() == reqSize_data);
+
+	//TODO: memcpy_data, etc
 }
 
 SerialBuffer::SerialBuffer() :

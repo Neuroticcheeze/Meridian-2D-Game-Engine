@@ -29,6 +29,9 @@ using std::string;
 #include <unordered_map>
 using std::unordered_map;
 
+#include <functional>
+using std::function;
+
 #ifdef _DEBUG
 #define RESOURCE_PATH "Res/"
 #else
@@ -39,6 +42,9 @@ typedef unsigned char byte;
 
 namespace Meridian
 {
+	//Typedef Function Object
+	typedef function<void(IAsset **)> AssetFactory;
+
 	/*=============================================================================
 	Responsible for controlling how textures, sounds, etc, are read and stored in 
 	the game as well as providing an interface to create assets and retrieve them
@@ -121,11 +127,8 @@ namespace Meridian
 			T * asset = new T();
 			asset->Load(properties.data());
 
-			//TODO: call asset->Encode with SerialBuffer
-			//TODO: append serialbuffer to list (which exists in debug mode only)
-			//TODO: make list write to the resource file (in dbg mode inside LoadResources)
-
-			//m_loadedAssets[string(p_identifier)] = asset;
+			//Set the factory table with this type of asset.
+			m_factoryTable[asset->ID()] = [](IAsset ** p_val) { *p_val = new T(); };
 
 			return true;
 #endif
@@ -148,10 +151,15 @@ namespace Meridian
 		}
 #endif
 
+			/*Instantiate a new asset object using the factory table to do it.*/
+		void AssetFactoryGenerate(const byte & p_id, IAsset ** p_value);
+
 	private:///Member Fields
 
 		string m_rootPath;
 
-		unordered_map<string, IAsset*> m_loadedAssets;
+		unordered_map<string, IAsset *> m_loadedAssets;
+
+		AssetFactory m_factoryTable[256];
 	};
 }

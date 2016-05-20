@@ -12,7 +12,8 @@
 
 using namespace Meridian;
 
-IAsset::IAsset()
+IAsset::IAsset(const byte & p_id) :
+	m_id(p_id)
 {
 
 }
@@ -20,4 +21,9 @@ IAsset::IAsset()
 IAsset::~IAsset()
 {
 
+}
+
+const byte & IAsset::ID() const
+{
+	return m_id;
 }
