@@ -19,6 +19,7 @@ void main()
 			Meridian::AssetTexture * test = nullptr;
 			resourceManager->GetAsset("test_texture", &test);
 
+			resourceManager->SaveResources();
 			resourceManager->LoadResources();
 		}
 	);

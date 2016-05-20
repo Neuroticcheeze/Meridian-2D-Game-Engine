@@ -71,6 +71,9 @@ namespace Meridian
 
 	public:///Resource utilities
 
+		   /*Used only during debug to store any loaded assets in the resource manager to the binary resource file.*/
+		void SaveResources();
+
 			/*Used always (debug + release) to load any serialised assets from the binary resource file.*/
 		void LoadResources();
 

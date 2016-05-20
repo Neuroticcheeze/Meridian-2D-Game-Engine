@@ -13,6 +13,7 @@
 #include <glfw3.h>
 #include <fstream>
 using std::ifstream;
+using std::ofstream;
 using std::streampos;
 using std::ios;
 
@@ -42,6 +43,29 @@ void ResourceManager::Render(MeridianEngine * p_engine)
 void ResourceManager::Finalise(MeridianEngine * p_engine)
 {
 
+}
+
+void ResourceManager::SaveResources()
+{
+#ifdef _DEBUG
+
+	ofstream file(GetPath("ro/resource.bin"), ofstream::binary | ofstream::trunc);
+
+	//Store
+	struct
+	{
+		//blocksize + name	+ type	+ data
+		int c = 4	+ 16	+ 1		+ 1;
+		char name[16] = "apple_tree";
+		byte type = 2;
+		byte data[1] = {3};
+	} t;
+	file.write(reinterpret_cast<const char*>(&t), sizeof(t));
+
+
+	file.close();
+
+#endif
 }
 
 void ResourceManager::LoadResources()
@@ -104,7 +128,7 @@ void ResourceManager::LoadResources()
 		//Get the name of the asset.
 		assetName = static_cast<char*>(malloc(16));
 		memcpy_s(assetName, 16, data + blockStart + 4, 16);
-		*(assetName + 3) = 0;
+		*(assetName + 15) = 0;
 
 		//Get the type of the asset.
 		memcpy_s(&assetType, 1, data + blockStart + 4 + 16, 1);
