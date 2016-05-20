@@ -121,7 +121,8 @@ namespace Meridian
 			data and resizing the buffer to the specified required size.*/
 		void Reallocate(const unsigned int & p_requiredSize)
 		{
-			free(m_buffer);
+			if (m_buffer != nullptr)
+				free(m_buffer);
 
 			m_buffer = p_requiredSize > 0 ? 
 				static_cast<byte*>(malloc(m_size = p_requiredSize)) : 

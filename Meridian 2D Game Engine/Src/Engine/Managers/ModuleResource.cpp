@@ -46,22 +46,32 @@ void ResourceManager::Finalise(MeridianEngine * p_engine)
 
 void ResourceManager::LoadResources()
 {
-	ifstream file(GetPath("arch/resource.bin"), ifstream::binary);
+	//TODO: change serialbuffer to not reallocate. Just set the data ptr to "data" over here with an offset. It's faster. duh.
+
+	ifstream file(GetPath("ro/resource.bin"), ifstream::binary);
+
+	if (!file.is_open())
+		return;
+		//TODO: print error that resource file couldn't be found.
 
 	//Get the size of the memory block and reset the pointer in the stream to 0
-	std::streampos fsize = 0;
+	streampos fsize = 0;
 	fsize = file.tellg();
 	file.seekg(0, ios::end);
 	fsize = file.tellg() - fsize;
 	file.clear();
 	file.seekg(0, ifstream::beg);
 
+	if (static_cast<int>(fsize) == 0)
+	{
+		file.close();
+		return;
+		//TODO: print error that resource file is empty or corrupt.
+	}
+
+
 	//The buffer as chars to be conv'd to floats later
 	char * data = static_cast<char*>(malloc(fsize));
-
-	if (!file.is_open())
-		return;
-	//TODO: print error that resource file couldn't be found.
 
 	file.read(data, fsize);
 	file.close();
@@ -77,6 +87,40 @@ void ResourceManager::LoadResources()
 			# bytes for each property spec.
 			# bytes for potential "main data block"
 	*/
+
+	int currentBlockSize = 0, currentAssetSize;
+	char * assetName = nullptr;
+	byte assetType;
+
+	SerialBuffer buff;
+	
+	for (int blockStart = 0; blockStart < static_cast<int>(fsize); blockStart += currentBlockSize)
+	{
+		//Get how big this block(asset) size is.
+		memcpy_s(&currentBlockSize, 4, data + blockStart, 4);
+
+		assert(currentBlockSize < 68157440);//No asset should be bigger than 65 megabytes! (About the size of a 4096 square 4-channel non-compressed image)
+
+		//Get the name of the asset.
+		assetName = static_cast<char*>(malloc(16));
+		memcpy_s(assetName, 16, data + blockStart + 4, 16);
+		*(assetName + 3) = 0;
+
+		//Get the type of the asset.
+		memcpy_s(&assetType, 1, data + blockStart + 4 + 16, 1);
+
+		//Get the actual asset header and data, and store it in a SerialBuffer.
+		currentAssetSize = currentBlockSize - (4 + 16 + 1);
+		buff.Reallocate(currentAssetSize);
+		memcpy_s(buff.Data(), currentAssetSize, data + blockStart + 4 + 16 + 1, currentAssetSize);
+
+		//TODO: factory create asset given the type (byte)
+		//TODO: call decode on asset.
+		//TODO: add asset to map with asset_name.
+	}
+
+	//Release the memory we created.
+	free(data);
 }
 
 string ResourceManager::GetPath(const char * p_subdir) const

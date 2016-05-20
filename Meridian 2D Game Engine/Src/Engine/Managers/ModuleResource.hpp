@@ -102,7 +102,7 @@ namespace Meridian
 		{
 #ifdef _DEBUG
 			
-			assert(strlen(p_identifier) <= 16);
+			assert(strlen(p_identifier) < 16);//Must be at most 15 characters long
 
 			static_assert(std::is_base_of<IAsset, T>::value, "T must derive from IAsset");
 
@@ -118,7 +118,11 @@ namespace Meridian
 			T * asset = new T();
 			asset->Load(properties.data());
 
-			m_loadedAssets[string(p_identifier)] = asset;
+			//TODO: call asset->Encode with SerialBuffer
+			//TODO: append serialbuffer to list (which exists in debug mode only)
+			//TODO: make list write to the resource file (in dbg mode inside LoadResources)
+
+			//m_loadedAssets[string(p_identifier)] = asset;
 
 			return true;
 #endif
