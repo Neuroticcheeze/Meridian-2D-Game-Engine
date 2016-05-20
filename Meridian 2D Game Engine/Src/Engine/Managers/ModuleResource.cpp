@@ -17,6 +17,10 @@ using std::ofstream;
 using std::streampos;
 using std::ios;
 
+#define EX_HEADER_SIZE				4 + 16 + 1
+#define EX_HEADER_SIZE_mTYPE		4 + 16
+#define EX_HEADER_SIZE_mTYPE_mNAME	4
+
 using namespace Meridian;
 
 ResourceManager::ResourceManager()
@@ -26,6 +30,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
+	Clear();
 }
 
 void ResourceManager::Initialise(MeridianEngine * p_engine)
@@ -45,6 +50,16 @@ void ResourceManager::Finalise(MeridianEngine * p_engine)
 
 }
 
+void ResourceManager::Clear()
+{
+	for (auto it : m_loadedAssets)
+	{
+		delete it.second;
+	}
+
+	m_loadedAssets.clear();
+}
+
 void ResourceManager::SaveResources()
 {
 #ifdef _DEBUG
@@ -52,19 +67,32 @@ void ResourceManager::SaveResources()
 	ofstream file(GetPath("ro/resource.bin"), ofstream::binary | ofstream::trunc);
 
 	//Store
-	struct
+
+	SerialBuffer buff;
+
+	for (auto it : m_loadedAssets)
 	{
-		//blocksize + name	+ type	+ data
-		int c = 4	+ 16	+ 1		+ (2 + 2 + 1 + 255*255*4);
-		char name[16] = "apple_tree";
-		byte type = 0;
-		byte data[5] = {1, 0, 1, 0, 4 };
-		byte pdata[4096];
-	} t;
-	file.write(reinterpret_cast<const char*>(&t), sizeof(t));
+		const IAsset & asset = *it.second;
+
+		asset.Encode(buff);
+
+		int size = EX_HEADER_SIZE + buff.Size();
+		
+		char name[16];
+		memcpy_s(name, 16, it.first.c_str(), 16);
+
+		byte type = asset.ID();
+
+		file.write(reinterpret_cast<const char*>(&size), sizeof(size));
+		file.write(reinterpret_cast<const char*>(&name), sizeof(name));
+		file.write(reinterpret_cast<const char*>(&type), sizeof(type));
+		file.write(reinterpret_cast<const char*>(buff.C_Data()), buff.Size());
+	}
 
 
 	file.close();
+
+	Clear();
 
 #endif
 }
@@ -128,16 +156,16 @@ void ResourceManager::LoadResources()
 
 		//Get the name of the asset.
 		assetName = static_cast<char*>(malloc(16));
-		memcpy_s(assetName, 16, data + blockStart + 4, 16);
+		memcpy_s(assetName, 16, data + blockStart + EX_HEADER_SIZE_mTYPE_mNAME, 16);
 		*(assetName + 15) = 0;
 
 		//Get the type of the asset.
-		memcpy_s(&assetType, 1, data + blockStart + 4 + 16, 1);
+		memcpy_s(&assetType, 1, data + blockStart + EX_HEADER_SIZE_mTYPE, 1);
 
 		//Get the actual asset header and data, and store it in a SerialBuffer.
-		currentAssetSize = currentBlockSize - (4 + 16 + 1);
+		currentAssetSize = currentBlockSize - (EX_HEADER_SIZE);
 		buff.Reallocate(currentAssetSize);
-		memcpy_s(buff.Data(), currentAssetSize, data + blockStart + 4 + 16 + 1, currentAssetSize);
+		memcpy_s(buff.Data(), currentAssetSize, data + blockStart + EX_HEADER_SIZE, currentAssetSize);
 
 		IAsset * newAsset = nullptr;
 		AssetFactoryGenerate(assetType, &newAsset);

@@ -77,9 +77,10 @@ void AssetTexture::Encode(SerialBuffer & p_buffer) const
 	//Set buffer with size needed to store this texture.
 	p_buffer.Reallocate(reqSize);
 
-	memcpy_s(p_buffer.Data(0), sizeof(m_width), &m_width, sizeof(m_width));
+	memcpy_s(p_buffer.Data(), sizeof(m_width), &m_width, sizeof(m_width));
 	memcpy_s(p_buffer.Data(sizeof(m_width)), sizeof(m_height), &m_height, sizeof(m_height));
 	memcpy_s(p_buffer.Data(sizeof(m_width) + sizeof(m_height)), sizeof(m_channels), &m_channels, sizeof(m_channels));
+	memcpy_s(p_buffer.Data(sizeof(m_width) + sizeof(m_height) + sizeof(m_channels)), m_channels * m_width * m_height, m_pixelData.data(), m_channels * m_width * m_height);
 }
 
 #endif
@@ -91,7 +92,7 @@ void AssetTexture::Decode(const SerialBuffer & p_buffer)
 		sizeof(m_height) +					//Height
 		sizeof(m_channels);					//Number of colour channels
 	
-	assert(p_buffer.Size() == reqSize_header);
+	assert(p_buffer.Size() >= reqSize_header);
 	
 	memcpy_s(&m_width, sizeof(m_width), p_buffer.C_Data(0), sizeof(m_width));
 	memcpy_s(&m_height, sizeof(m_height), p_buffer.C_Data(sizeof(m_width)), sizeof(m_height));
@@ -99,9 +100,10 @@ void AssetTexture::Decode(const SerialBuffer & p_buffer)
 
 	int reqSize_data = m_channels * m_width * m_height; //Pixel data
 
-	assert(p_buffer.Size() == reqSize_data);
+	assert(p_buffer.Size() >= reqSize_data);
 
-	//TODO: memcpy_data, etc
+	m_pixelData.resize(reqSize_data);
+	memcpy_s(m_pixelData.data(), reqSize_data, p_buffer.C_Data(sizeof(m_width) + sizeof(m_height) + sizeof(m_channels)), reqSize_data);
 }
 
 SerialBuffer::SerialBuffer() :

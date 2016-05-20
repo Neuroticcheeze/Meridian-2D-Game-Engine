@@ -77,7 +77,10 @@ namespace Meridian
 
 	public:///Resource utilities
 
-		   /*Used only during debug to store any loaded assets in the resource manager to the binary resource file.*/
+			/*Wipe all loaded assets during runtime. (Leaves the resource file untouched.)*/
+		void Clear();
+
+			/*Used only during debug to store any loaded assets in the resource manager to the binary resource file.*/
 		void SaveResources();
 
 			/*Used always (debug + release) to load any serialised assets from the binary resource file.*/
@@ -128,11 +131,12 @@ namespace Meridian
 			asset->Load(properties.data());
 
 			//Set the factory table with this type of asset.
-
 			auto & factoryAt = m_factoryTable[asset->ID()];
-
 			if (factoryAt == nullptr) 
 				factoryAt = [](IAsset ** p_val) { *p_val = new T(); };
+
+			//Add to the loaded assets map.
+			m_loadedAssets[string(p_identifier)] = asset;
 
 			return true;
 #endif
