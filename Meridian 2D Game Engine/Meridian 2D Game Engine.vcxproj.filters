@@ -52,5 +52,13 @@
     <Image Include="Res\test.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Res\tree.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\ro\resource.bin">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
