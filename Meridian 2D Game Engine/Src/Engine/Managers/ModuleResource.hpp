@@ -121,7 +121,7 @@ namespace Meridian
 			auto it = m_loadedAssets.find(string(p_identifier));
 
 			if (it != m_loadedAssets.end())
-				return false;	//TODO: print error message to prompt a delete of this asset before this can work.
+				return false;	//TODO: print error message to prompt a delete of this asset before this function can work.
 
 			vector<RawProperty> properties;
 
