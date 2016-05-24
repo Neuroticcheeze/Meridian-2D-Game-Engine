@@ -17,6 +17,10 @@ using std::ofstream;
 using std::streampos;
 using std::ios;
 
+#include <direct.h>
+#include <chrono>
+#include <thread>
+
 #define EX_HEADER_SIZE				4 + 16 + 1
 #define EX_HEADER_SIZE_mTYPE		4 + 16
 #define EX_HEADER_SIZE_mTYPE_mNAME	4
@@ -64,6 +68,10 @@ void ResourceManager::SaveResources()
 {
 #ifdef _DEBUG
 
+	if (_mkdir((m_rootPath + "ro/").c_str()) != 0)
+		return;
+		//TODO: print error that the directory couldn't be created.
+
 	ofstream file(GetPath("ro/resource.bin"), ofstream::binary | ofstream::trunc);
 
 	//Store
@@ -103,7 +111,7 @@ void ResourceManager::LoadResources()
 
 	ifstream file(GetPath("ro/resource.bin"), ifstream::binary);
 
-	if (!file.is_open())
+	if (file.fail())
 		return;
 		//TODO: print error that resource file couldn't be found.
 

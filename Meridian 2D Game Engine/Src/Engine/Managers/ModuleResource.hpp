@@ -138,8 +138,20 @@ namespace Meridian
 			//Add to the loaded assets map.
 			m_loadedAssets[string(p_identifier)] = asset;
 
-			return true;
+#else
+
+			T * asset = new T();
+
+			//Set the factory table with this type of asset.
+			auto & factoryAt = m_factoryTable[asset->ID()];
+			if (factoryAt == nullptr)
+				factoryAt = [](IAsset ** p_val) { *p_val = new T(); };
+
+			delete asset;
+
 #endif
+
+			return true;
 		}
 
 #ifdef _DEBUG
