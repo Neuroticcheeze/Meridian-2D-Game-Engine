@@ -16,6 +16,16 @@ using glm::max;
 
 using namespace Meridian;
 
+InputManager::KeyState InputManager::m_keyStates[GLFW_MAX_KEYS];
+
+void InputManager::OnKey(GLFWwindow *, int p_keycode, int p_scancode, int p_action, int p_mods)
+{
+	m_keyStates[p_keycode] = 
+		p_action == GLFW_PRESS ? KeyState::DOWN : 
+		(p_action == GLFW_RELEASE ? KeyState::UP : 
+			m_keyStates[p_keycode]);
+}
+
 InputManager::InputManager()
 {
 }
@@ -55,4 +65,9 @@ void InputManager::Finalise(MeridianEngine * p_engine)
 const uvec2 & InputManager::GetMousePosition() const
 {
 	return m_mousePosition;
+}
+
+const InputManager::KeyState & InputManager::GetKeyState(const int & p_keycode) const
+{
+	return m_keyStates[p_keycode];
 }
