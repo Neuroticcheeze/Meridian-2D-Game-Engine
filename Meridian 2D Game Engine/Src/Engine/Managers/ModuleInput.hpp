@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "..\Core\Module.hpp"
-
 #include <glm/vec2.hpp>
 using glm::uvec2;
 
@@ -31,7 +29,7 @@ namespace Meridian
 	/*==============================================================================================================
 	Responsible for listening to user input and providing a clear and detailed interface to the rest of the engine.
 	==============================================================================================================*/
-	class InputManager : public IModule
+	class InputManager
 	{
 	public:///Internal Forward Declarations
 		

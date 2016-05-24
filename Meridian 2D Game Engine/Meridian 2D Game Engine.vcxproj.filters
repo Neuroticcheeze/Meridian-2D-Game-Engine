@@ -26,9 +26,6 @@
     <ClCompile Include="Src\Engine\Managers\ModuleInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Engine\Core\Module.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Engine\Core\Asset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,7 +40,6 @@
     <ClInclude Include="Src\Engine\Core\Meridian.hpp" />
     <ClInclude Include="Src\Engine\Managers\ModuleGraphics.hpp" />
     <ClInclude Include="Src\Engine\Managers\ModuleInput.hpp" />
-    <ClInclude Include="Src\Engine\Core\Module.hpp" />
     <ClInclude Include="Src\Engine\Core\Asset.hpp" />
     <ClInclude Include="Src\Engine\Assets\AssetTexture.hpp" />
     <ClInclude Include="Src\Engine\Managers\ModuleResource.hpp" />

@@ -13,7 +13,7 @@ void main()
 	engine->HookToPreEvent([]
 		(Meridian::MeridianEngine * engine)
 		{
-			auto resourceManager = engine->GetModule<Meridian::ResourceManager>(2);
+			auto resourceManager = engine->GetResourceManager();
 			resourceManager->CreateAsset<Meridian::AssetTexture>("test_texture", resourceManager->GetPath("test.png"));
 			resourceManager->CreateAsset<Meridian::AssetTexture>("tree", resourceManager->GetPath("tree.png"));
 
@@ -28,7 +28,7 @@ void main()
 	engine->HookToLoopEvent([]
 		(Meridian::MeridianEngine * engine, const float & dt) 
 		{
-			const uvec2 & pos = engine->GetModule<Meridian::InputManager>(0)->GetMousePosition();
+			const uvec2 & pos = engine->GetInputManager()->GetMousePosition();
 			printf("Mouse pos: [%u, %u]\n", pos.x, pos.y);
 		}
 	);
@@ -42,9 +42,6 @@ void main()
 	Networking
 	AI
 	*/
-	engine->AddModule<Meridian::InputManager>();
-	engine->AddModule<Meridian::GraphicsManager>();
-	engine->AddModule<Meridian::ResourceManager>();
 
 	engine->Load();
 	engine->Run(Meridian::MeridianEngine::GameLoopMode::VARIABLE);

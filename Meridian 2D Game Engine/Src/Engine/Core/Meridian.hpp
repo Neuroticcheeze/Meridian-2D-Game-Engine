@@ -11,8 +11,9 @@
 //					-Run
 //					-Unload
 //					-Terminate
-//					-AddModule
-//					-GetModule
+//					-GetInputManager
+//					-GetResourceManager
+//					-GetGraphicsManager
 //					-GetWindow
 //					-HookToPreEvent
 //					-HookToLoopEvent
@@ -39,7 +40,10 @@ struct GLFWwindow;
 namespace Meridian
 {
 	//External Forward Declarations
-	class IModule;
+	class InputManager;
+	class ResourceManager;
+	class GraphicsManager;
+
 	class MeridianEngine;
 
 	//Engine Event Callbacks
@@ -80,25 +84,9 @@ namespace Meridian
 			hit Unload (Which should be written after Run)*/
 		void Terminate();
 
-			/*Add the module to the game engine to be processed and used. This module will perform actions 
-			relative to others in the order which it was added to the engine.*/
-		template <typename T>
-		void AddModule()
-		{
-			static_assert(std::is_base_of<IModule, T>::value, "T must derive from IModule");
-
-			T* module = new T;
-			m_modules.push_back(module);
-		}
-			
-			/*Get a module from the list given the index which corresponds to the order that the module was added in.*/
-		template <typename T>
-		inline T * GetModule(const int & p_index)
-		{
-			static_assert(std::is_base_of<IModule, T>::value, "T must derive from IModule");
-
-			return static_cast<T*>(m_modules[p_index]);
-		}
+		inline InputManager * GetInputManager() { return m_inputManager; }
+		inline ResourceManager * GetResourceManager() { return m_resourceManager; }
+		inline GraphicsManager * GetGraphicsManager() { return m_graphicsManager; }
 
 			/*Get a handle to the main game window.*/
 		inline GLFWwindow * GetWindow()
@@ -117,8 +105,12 @@ namespace Meridian
 
 	private:///Member Fields
 
+		///Modules
+		InputManager * m_inputManager;
+		ResourceManager * m_resourceManager;
+		GraphicsManager * m_graphicsManager;
+
 		bool m_isRunning, m_isInitialised;
-		vector<IModule *> m_modules;
 		GLFWwindow * m_window;
 
 		OnEnginePre m_preHook;

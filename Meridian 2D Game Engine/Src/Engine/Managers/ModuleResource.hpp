@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "..\Core\Module.hpp"
 #include "..\Core\Asset.hpp"
 
 #include <vector>
@@ -50,7 +49,7 @@ namespace Meridian
 	the game as well as providing an interface to create assets and retrieve them
 	from the game's directory at lightning speed.
 	=============================================================================*/
-	class ResourceManager : public IModule
+	class ResourceManager
 	{
 	public:///Friendly Internal Forward Declarations
 

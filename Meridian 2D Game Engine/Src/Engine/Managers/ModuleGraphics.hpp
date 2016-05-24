@@ -15,8 +15,6 @@
 
 #pragma once
 
-#include "..\Core\Module.hpp"
-
 #include <glm/vec2.hpp>
 using glm::uvec2;
 
@@ -26,7 +24,7 @@ namespace Meridian
 	Responsible for coordinating how everything from text to lighting functions in 
 	Meridian, as well as providing the ability to tailor the system to your game.
 	=============================================================================*/
-	class GraphicsManager : public IModule
+	class GraphicsManager
 	{
 	public:///Friendly Internal Forward Declarations
 
