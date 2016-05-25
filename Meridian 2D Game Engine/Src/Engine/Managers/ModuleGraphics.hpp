@@ -25,6 +25,9 @@
 
 #pragma once
 
+#include <vector>
+using std::vector;
+
 #include <glm/vec2.hpp>
 using glm::uvec2;
 
@@ -77,7 +80,7 @@ namespace Meridian
 		GLuint CreateProgram(const vector<GLuint> & p_shaders);
 		void DeleteProgram(GLuint & p_handle);
 
-		FrameBufferObject CreateFrameBufferObject(const unsigned int & p_width, const unsigned int & p_height);
+		FrameBufferObject CreateFrameBufferObject(const unsigned int & p_width, const unsigned int & p_height, const vector<GraphicsManager::Attachment> & p_attachments, const GraphicsManager::Attachment * p_depthAttachment = nullptr);
 		void BeginFrameBufferObject(const FrameBufferObject & p_handle);
 		void DeleteFrameBufferObject(FrameBufferObject & p_handle);
 
@@ -91,6 +94,8 @@ namespace Meridian
 	=============================================================================*/
 	struct GraphicsManager::Attachment
 	{
+		Attachment();
+
 		enum class Type;
 
 		GLuint
@@ -110,6 +115,7 @@ namespace Meridian
 		vector<GraphicsManager::Attachment> m_attachments;
 		GLuint m_handle;
 		uvec2 m_dimensions;
+		bool m_hasDepthBuffer;
 	};
 
 	/*=============================================================================

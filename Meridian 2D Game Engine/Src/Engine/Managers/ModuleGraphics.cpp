@@ -66,49 +66,65 @@ void GraphicsManager::DeleteProgram(GLuint & p_handle)
 
 }
 
-GraphicsManager::FrameBufferObject GraphicsManager::CreateFrameBufferObject(const unsigned int & p_width, const unsigned int & p_height)
+GraphicsManager::FrameBufferObject GraphicsManager::CreateFrameBufferObject(const unsigned int & p_width, const unsigned int & p_height, const vector<GraphicsManager::Attachment> & p_attachments, const GraphicsManager::Attachment * p_depthAttachment)
 {
+	//Make sure the size of the fbo is at least 1 pixel, and there is at least a single colour attachment.
+	assert(p_width * p_height * p_attachments.size() > 0);
+
 	FrameBufferObject fbo;
 	auto & fbHandle = fbo.m_handle;
 	fbo.m_dimensions = uvec2(p_width, p_height);
-
-	Attachment colour0 = Attachment();
-	auto & att_colour0 = colour0.m_handle;
-	colour0.m_format = GL_RGBA8;
-	colour0.m_type = Attachment::Type::ATT_COLOUR;
-
-	Attachment __depth = Attachment();
-	auto & att___depth = __depth.m_handle;
-	__depth.m_format = GL_DEPTH_COMPONENT24;
-	__depth.m_type = Attachment::Type::ATT_DEPTH;
+	fbo.m_attachments = p_attachments;
 
 	//RGBA8 RenderBuffer, 24 bit depth RenderBuffer, 256x256
 	glGenFramebuffers(1, &fbHandle);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbHandle);
 
-	//Create and attach a color buffer
-	glGenRenderbuffers(1, &att_colour0);
-	//We must bind color_rb before we call glRenderbufferStorage
-	glBindRenderbuffer(GL_RENDERBUFFER, att_colour0);
-	//The storage format is RGBA8
-	glRenderbufferStorage(GL_RENDERBUFFER, colour0.m_format, p_width, p_height);
-	//Attach color buffer to FBO
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, att_colour0);
-	//-------------------------
 
-	//Create and attach a depth buffer
-	glGenRenderbuffers(1, &att___depth);
-	glBindRenderbuffer(GL_RENDERBUFFER, att___depth);
-	glRenderbufferStorage(GL_RENDERBUFFER, __depth.m_format, p_width, p_height);
-	//-------------------------
-	//Attach depth buffer to FBO
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, att___depth);
-	//-------------------------
+
+	GLint maxDrawBuf = 0;
+	glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuf);
+	assert(maxDrawBuf >= static_cast<int>(fbo.m_attachments.size()));
+
+	//Create colour attachments on the video card.
+	int j = -1;
+	for (Attachment & att : fbo.m_attachments)
+	{
+		//No depth attachments allowed here.
+		assert(att.m_type != Attachment::Type::ATT_DEPTH);
+
+		//Create and attach a color buffer
+		glGenRenderbuffers(1, &att.m_handle);
+		//We must bind color_rb before we call glRenderbufferStorage
+		glBindRenderbuffer(GL_RENDERBUFFER, att.m_handle);
+		//The storage format is RGBA8
+		glRenderbufferStorage(GL_RENDERBUFFER, att.m_format, p_width, p_height);
+		//Attach color buffer to FBO
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + ++j, GL_RENDERBUFFER, att.m_handle);
+		//-------------------------
+	}
+
+	//If the suer wants a depth buffer attached...
+	if (fbo.m_hasDepthBuffer = p_depthAttachment != nullptr)
+	{
+		Attachment __depth = Attachment(*p_depthAttachment);
+		auto & att___depth = __depth.m_handle;
+		
+		assert(__depth.m_type == Attachment::Type::ATT_DEPTH);
+
+		//Create and attach a depth buffer
+		glGenRenderbuffers(1, &att___depth);
+		glBindRenderbuffer(GL_RENDERBUFFER, att___depth);
+		glRenderbufferStorage(GL_RENDERBUFFER, __depth.m_format, p_width, p_height);
+		//-------------------------
+		//Attach depth buffer to FBO
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, att___depth);
+		//-------------------------
+
+		fbo.m_attachments.push_back(__depth);
+	}
 
 	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
-	fbo.m_attachments.push_back(colour0);
-	fbo.m_attachments.push_back(__depth);
 
 	return fbo;
 }
@@ -117,7 +133,7 @@ void GraphicsManager::BeginFrameBufferObject(const FrameBufferObject & p_handle)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, p_handle.m_handle);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT * static_cast<int>(p_handle.m_hasDepthBuffer));//Clears depth only if there's a depth buffer attached.
 	//-------------------------
 	glViewport(0, 0, p_handle.m_dimensions.x, p_handle.m_dimensions.y);
 }
