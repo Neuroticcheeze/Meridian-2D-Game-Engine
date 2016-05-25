@@ -23,8 +23,6 @@
 //
 ===================================================================*/
 
-//TODO: Add interface with mouse and keyboard. Eventually for handheld devices, etc.
-
 #pragma once
 
 #include <glm/vec2.hpp>
