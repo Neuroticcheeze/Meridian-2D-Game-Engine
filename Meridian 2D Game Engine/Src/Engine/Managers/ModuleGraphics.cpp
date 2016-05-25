@@ -36,7 +36,7 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 		""
 		"void main()"
 		"{"
-		"	gl_Position = vec4(lPosition, -1.0, 1.0);"
+		"	gl_Position = vec4(lPosition, 0.0, 1.0);"
 		"}"
 		, GL_VERTEX_SHADER);
 
@@ -47,7 +47,7 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 		""
 		"void main()"
 		"{"
-		"	oColour = vec4(1.0, 1.0, 0.0, 1.0);"
+		"	oColour = vec4(gl_FragCoord.xy / 1000, 0.0, 1.0);"
 		"}"
 		, GL_FRAGMENT_SHADER);
 
@@ -63,12 +63,13 @@ void GraphicsManager::Update(MeridianEngine * p_engine, const float & p_dt)
 
 void GraphicsManager::Render(MeridianEngine * p_engine)
 {
+	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glViewport(0, 0, 100, 100);
+	//glViewport(0, 0, 100, 100);
 	glUseProgram(program);
 	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 
 	glfwSwapBuffers(p_engine->GetWindow());
 }
@@ -288,17 +289,17 @@ void GraphicsManager::DeleteFrameBufferObject(FrameBufferObject & p_handle, cons
 
 GraphicsManager::VertexArrayObject GraphicsManager::CreateVertexArrayObject()
 {
-	vector<float> vertices = 
+	float vertices[8] =
 	{
 		-1, -1,
-		1, -1,
-		1, 1
-		-1, 1
+		+1, -1,
+		+1, +1,
+		-1, +1,
 	};
 
-	vector<unsigned int> indices =
+	GLubyte indices[6] =
 	{
-		0, 3, 2, 
+		0, 3, 2,
 		0, 2, 1
 	};
 
@@ -309,7 +310,7 @@ GraphicsManager::VertexArrayObject GraphicsManager::CreateVertexArrayObject()
 
 	glGenBuffers(1, &vao.m_vbo); // Generate our Vertex Buffer Object  
 	glBindBuffer(GL_ARRAY_BUFFER, vao.m_vbo); // Bind our Vertex Buffer Object  
-	glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW); // Set the size and data of our VBO and set it to STATIC_DRAW  
+	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), vertices, GL_STATIC_DRAW); // Set the size and data of our VBO and set it to STATIC_DRAW  
 
 
 	//Create the IBO for the triangle
@@ -317,11 +318,11 @@ GraphicsManager::VertexArrayObject GraphicsManager::CreateVertexArrayObject()
 	//We could have actually made one big IBO for both the quad and triangle.
 	glGenBuffers(1, &vao.m_ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vao.m_ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLubyte), indices, GL_STATIC_DRAW);
 
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer((GLuint)0, 2, GL_FLOAT, GL_FALSE, 0, 0); // Set up our vertex attributes pointer  
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // Set up our vertex attributes pointer  
 
 	glBindVertexArray(0); // Disable our Vertex Buffer Object
 
