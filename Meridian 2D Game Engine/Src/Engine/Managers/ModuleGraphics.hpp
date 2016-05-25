@@ -10,7 +10,6 @@
 //					-CreateShader
 //					-DeleteShader
 //					-CreateProgram
-//					-LinkAndCompileProgram
 //					-DeleteProgram
 //					-CreateFrameBufferObject
 //					-BeginFrameBufferObject
@@ -48,6 +47,7 @@ namespace Meridian
 
 		struct Attachment;
 		struct FrameBufferObject;
+		struct VertexArrayObject;
 
 	public:///Friendly Internal Forward Declarations
 
@@ -77,17 +77,13 @@ namespace Meridian
 	private:///Private Graphics Utilities
 
 		/*Create a shader to later be linked to a program.*/
-		GLuint CreateShader(const char ** p_source, const GLenum & p_type);
+		GLuint CreateShader(const char * p_source, const GLenum & p_type);
 
 		/*Delete and release the video memory holding the specified shader.*/
 		void DeleteShader(GLuint & p_handle);
 
 		/*Create a program to have shaders later linked to it.*/
 		GLuint CreateProgram(const vector<GLuint> & p_shaders);
-
-		/*Link all specified shaders to the specified program, link that program and return 
-		whether it was successful or not. This won't delete the program in either case.*/
-		bool LinkAndCompileProgram(GLuint & p_handle, const vector<GLuint> & p_shaders);
 
 		void DeleteProgram(GLuint & p_handle);
 
@@ -114,7 +110,11 @@ namespace Meridian
 		void EndFrameBufferObject();
 
 		/*Delete the frame buffer object and any attachments.*/
-		void DeleteFrameBufferObject(FrameBufferObject & p_handle, const bool & p_keepShell = false);
+		void DeleteFrameBufferObject(FrameBufferObject & p_handle, const bool & p_keepShell = false); 
+
+		/*Generate a vertex array object*///TODO: Make this more customisable!
+		VertexArrayObject CreateVertexArrayObject();
+		//TODO: Add a delete and draw for the VAO.
 
 	private:///Member Fields
 	};
@@ -128,7 +128,13 @@ namespace Meridian
 	{
 		enum class Type;
 
-		Attachment(const GLuint & p_format, const Type & p_type);
+		Attachment(const GLuint & p_format, const Type & p_type) :
+			m_format(p_format),
+			m_type(p_type),
+			m_handle(0)
+		{
+
+		}
 
 		GLuint
 			m_handle,
@@ -157,5 +163,10 @@ namespace Meridian
 	{
 		ATT_COLOUR,
 		ATT_DEPTH
+	};
+
+	struct GraphicsManager::VertexArrayObject
+	{
+		GLuint m_vao, m_vbo, m_ibo, m_indexCount;
 	};
 }
