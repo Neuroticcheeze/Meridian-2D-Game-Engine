@@ -7,7 +7,6 @@
 //Header File:	ModuleInput.hpp
 //
 //Objects:		InputManager
-//					-Implements IModule
 //					-GetMousePosition
 //					-KeyState
 //

@@ -7,7 +7,19 @@
 //Header File:	ModuleGraphics.hpp
 //
 //Objects:		GraphicsManager
-//					-Implements IModule
+//					-CreateShader
+//					-DeleteShader
+//					-CreateProgram
+//					-DeleteProgram
+//					-CreateFrameBufferObject
+//					-BeginrameBufferObject
+//					-DeleteFrameBufferObject
+//
+//				Attachment
+//
+//				FrameBufferObject
+//
+//				Type (enum)
 //
 ===================================================================*/
 
@@ -74,6 +86,11 @@ namespace Meridian
 	private:///Member Fields
 	};
 
+	/*=============================================================================
+	A wrapper around an OpenGL FBO-Attachment. This stores what type of attachment 
+	this is, along with the handle given to it by ogl, as well as the format it 
+	abides by.
+	=============================================================================*/
 	struct GraphicsManager::Attachment
 	{
 		enum class Type;
@@ -85,6 +102,11 @@ namespace Meridian
 			m_type;
 	};
 
+	/*=============================================================================
+	A wrapper to store handles to an OpenGL FBO. It stores such things as the FBO
+	handle, attachments, and the size of the fbo; (By which all attachments are 
+	indiscriminantly sized to).
+	=============================================================================*/
 	struct GraphicsManager::FrameBufferObject
 	{
 		vector<GraphicsManager::Attachment> m_attachments;
@@ -92,6 +114,9 @@ namespace Meridian
 		uvec2 m_dimensions;
 	};
 
+	/*=============================================================================
+	The type of attachment appended to an FBO. Either a colour or depth attachment.
+	=============================================================================*/
 	enum class GraphicsManager::Attachment::Type
 	{
 		ATT_COLOUR,

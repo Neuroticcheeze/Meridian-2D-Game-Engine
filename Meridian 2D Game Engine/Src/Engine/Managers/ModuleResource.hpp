@@ -7,7 +7,6 @@
 //Header File:	ModuleResource.hpp
 //
 //Objects:		ResourceManager
-//					-Implements IModule
 //					-LoadResources
 //					-GetPath
 //					-GetAsset
