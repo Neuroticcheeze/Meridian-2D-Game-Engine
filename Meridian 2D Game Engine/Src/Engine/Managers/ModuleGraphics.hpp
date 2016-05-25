@@ -18,6 +18,9 @@
 #include <glm/vec2.hpp>
 using glm::uvec2;
 
+typedef unsigned int GLuint;
+typedef unsigned int GLenum;
+
 namespace Meridian
 {
 	/*=============================================================================
@@ -26,6 +29,11 @@ namespace Meridian
 	=============================================================================*/
 	class GraphicsManager
 	{
+	private:///Internal Forward Declarations
+
+		struct Attachment;
+		struct FrameBufferObject;
+
 	public:///Friendly Internal Forward Declarations
 
 		friend class MeridianEngine;
@@ -40,17 +48,53 @@ namespace Meridian
 			/*Initialise this module and load anything it needs to run long-term.*/
 		void Initialise(MeridianEngine * p_engine);
 
-			/*Update this module inside the engine's gameloop.*/
+		/*Update this module inside the engine's gameloop.*/
 		void Update(MeridianEngine * p_engine, const float & p_dt);
 
-			/*Immediately render anything this module has to inside the OpenGL clear-swap space*/
+		/*Immediately render anything this module has to inside the OpenGL clear-swap space*/
 		void Render(MeridianEngine * p_engine);
 
-			/*Finalise this module and unload/delete anything it loaded during the initialise state.*/
+		/*Finalise this module and unload/delete anything it loaded during the initialise state.*/
 		void Finalise(MeridianEngine * p_engine);
 
-	public:///Graphics utilities
-		
+	public:///Graphics Utilities
+
+	private:///Private Graphics Utilities
+
+		GLuint CreateShader(const char ** p_source, const GLenum & p_type);
+		void DeleteShader(GLuint & p_handle);
+
+		GLuint CreateProgram(const vector<GLuint> & p_shaders);
+		void DeleteProgram(GLuint & p_handle);
+
+		FrameBufferObject CreateFrameBufferObject(const unsigned int & p_width, const unsigned int & p_height);
+		void BeginFrameBufferObject(const FrameBufferObject & p_handle);
+		void DeleteFrameBufferObject(FrameBufferObject & p_handle);
+
 	private:///Member Fields
+	};
+
+	struct GraphicsManager::Attachment
+	{
+		enum class Type;
+
+		GLuint
+			m_handle,
+			m_format;
+		Type
+			m_type;
+	};
+
+	struct GraphicsManager::FrameBufferObject
+	{
+		vector<GraphicsManager::Attachment> m_attachments;
+		GLuint m_handle;
+		uvec2 m_dimensions;
+	};
+
+	enum class GraphicsManager::Attachment::Type
+	{
+		ATT_COLOUR,
+		ATT_DEPTH
 	};
 }
