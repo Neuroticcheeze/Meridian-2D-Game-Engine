@@ -10,9 +10,11 @@
 //					-CreateShader
 //					-DeleteShader
 //					-CreateProgram
+//					-LinkAndCompileProgram
 //					-DeleteProgram
 //					-CreateFrameBufferObject
-//					-BeginrameBufferObject
+//					-BeginFrameBufferObject
+//					-EndFrameBufferObject
 //					-DeleteFrameBufferObject
 //
 //				Attachment
@@ -74,15 +76,45 @@ namespace Meridian
 
 	private:///Private Graphics Utilities
 
+		/*Create a shader to later be linked to a program.*/
 		GLuint CreateShader(const char ** p_source, const GLenum & p_type);
+
+		/*Delete and release the video memory holding the specified shader.*/
 		void DeleteShader(GLuint & p_handle);
 
+		/*Create a program to have shaders later linked to it.*/
 		GLuint CreateProgram(const vector<GLuint> & p_shaders);
+
+		/*Link all specified shaders to the specified program, link that program and return 
+		whether it was successful or not. This won't delete the program in either case.*/
+		bool LinkAndCompileProgram(GLuint & p_handle, const vector<GLuint> & p_shaders);
+
 		void DeleteProgram(GLuint & p_handle);
 
-		FrameBufferObject CreateFrameBufferObject(const unsigned int & p_width, const unsigned int & p_height, const vector<GraphicsManager::Attachment> & p_attachments, const GraphicsManager::Attachment * p_depthAttachment = nullptr);
+		/*Create a framebuffer object given the width and height, at least one colour attachment, 
+		and a possible depth attachment (Not required). Do note that all attachments in p_attachments
+		must be of type COLOUR only.*/
+		FrameBufferObject CreateFrameBufferObject(
+			const unsigned int & p_width, 
+			const unsigned int & p_height, 
+			const vector<GraphicsManager::Attachment> & p_attachments, 
+			const GraphicsManager::Attachment * p_depthAttachment = nullptr);
+
+		/*Recreate this FBO with the new size.*/
+		void ResizeFrameBufferObject(
+			const unsigned int & p_width,
+			const unsigned int & p_height, 
+			FrameBufferObject & p_handle);
+
+		/*Bind this FBO to be rendered to by any subsequent render calls. 
+		This will also clear the buffer automatically.*/
 		void BeginFrameBufferObject(const FrameBufferObject & p_handle);
-		void DeleteFrameBufferObject(FrameBufferObject & p_handle);
+
+		/*Go back to the screen buffer.*/
+		void EndFrameBufferObject();
+
+		/*Delete the frame buffer object and any attachments.*/
+		void DeleteFrameBufferObject(FrameBufferObject & p_handle, const bool & p_keepShell = false);
 
 	private:///Member Fields
 	};
@@ -94,9 +126,9 @@ namespace Meridian
 	=============================================================================*/
 	struct GraphicsManager::Attachment
 	{
-		Attachment();
-
 		enum class Type;
+
+		Attachment(const GLuint & p_format, const Type & p_type);
 
 		GLuint
 			m_handle,

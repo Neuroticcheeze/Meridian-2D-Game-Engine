@@ -27,7 +27,6 @@ GraphicsManager::~GraphicsManager()
 
 void GraphicsManager::Initialise(MeridianEngine * p_engine)
 {
-
 }
 
 void GraphicsManager::Update(MeridianEngine * p_engine, const float & p_dt)
@@ -61,12 +60,21 @@ GLuint GraphicsManager::CreateProgram(const vector<GLuint> & p_shaders)
 	return 0;
 }
 
+bool GraphicsManager::LinkAndCompileProgram(GLuint & p_handle, const vector<GLuint> & p_shaders)
+{
+	return false;
+}
+
 void GraphicsManager::DeleteProgram(GLuint & p_handle)
 {
 
 }
 
-GraphicsManager::FrameBufferObject GraphicsManager::CreateFrameBufferObject(const unsigned int & p_width, const unsigned int & p_height, const vector<GraphicsManager::Attachment> & p_attachments, const GraphicsManager::Attachment * p_depthAttachment)
+GraphicsManager::FrameBufferObject GraphicsManager::CreateFrameBufferObject(
+	const unsigned int & p_width, 
+	const unsigned int & p_height, 
+	const vector<GraphicsManager::Attachment> & p_attachments, 
+	const GraphicsManager::Attachment * p_depthAttachment)
 {
 	//Make sure the size of the fbo is at least 1 pixel, and there is at least a single colour attachment.
 	assert(p_width * p_height * p_attachments.size() > 0);
@@ -129,6 +137,23 @@ GraphicsManager::FrameBufferObject GraphicsManager::CreateFrameBufferObject(cons
 	return fbo;
 }
 
+void GraphicsManager::ResizeFrameBufferObject(
+	const unsigned int & p_width,
+	const unsigned int & p_height,
+	FrameBufferObject & p_handle)
+{
+	Attachment * depth = nullptr;
+
+	if (p_handle.m_hasDepthBuffer)
+	{
+		depth = &p_handle.m_attachments.back();
+		p_handle.m_attachments.pop_back();
+	}
+
+	DeleteFrameBufferObject(p_handle, true);
+	p_handle = CreateFrameBufferObject(p_width, p_height, p_handle.m_attachments, depth);
+}
+
 void GraphicsManager::BeginFrameBufferObject(const FrameBufferObject & p_handle)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, p_handle.m_handle);
@@ -138,7 +163,12 @@ void GraphicsManager::BeginFrameBufferObject(const FrameBufferObject & p_handle)
 	glViewport(0, 0, p_handle.m_dimensions.x, p_handle.m_dimensions.y);
 }
 
-void GraphicsManager::DeleteFrameBufferObject(FrameBufferObject & p_handle)
+void GraphicsManager::EndFrameBufferObject()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GraphicsManager::DeleteFrameBufferObject(FrameBufferObject & p_handle, const bool & p_keepShell)
 {
 	//Delete resources
 	for (auto & attachment : p_handle.m_attachments)
@@ -149,4 +179,20 @@ void GraphicsManager::DeleteFrameBufferObject(FrameBufferObject & p_handle)
 	//Bind 0, which means render to back buffer, as a result, fb is unbound
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &p_handle.m_handle);
+
+	if (!p_keepShell)
+	{
+		p_handle.m_attachments.clear();
+		p_handle.m_dimensions = uvec2(0);
+		p_handle.m_handle = 0;
+		p_handle.m_hasDepthBuffer = false;
+	}
+}
+
+GraphicsManager::Attachment::Attachment(const GLuint & p_format, const Type & p_type) :
+	m_format(p_format),
+	m_type(p_type),
+	m_handle(0)
+{
+
 }
