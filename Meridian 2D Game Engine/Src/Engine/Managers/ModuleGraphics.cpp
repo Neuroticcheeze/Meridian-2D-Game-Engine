@@ -221,6 +221,16 @@ GLuint GraphicsManager::CreateProgram(const vector<GLuint> & p_shaders)
 	return program;
 }
 
+GraphicsManager::UniformDirectory GraphicsManager::GenerateProgramUniformDirectory(GLuint & p_handle, const vector<const char*> & p_aliases)
+{
+	UniformDirectory ud;
+
+	for (const char * alias : p_aliases)
+	{
+		ud.m_mapping[string(alias)] = glGetUniformLocation(p_handle, alias);
+	}
+}
+
 void GraphicsManager::BindProgram(GLuint & p_handle)
 {
 	glUseProgram(p_handle);

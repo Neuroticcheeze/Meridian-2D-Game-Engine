@@ -34,12 +34,18 @@
 //
 //				VertexBufferObject
 //
+//				UniformDirectory
+//					-Get
+//
 ===================================================================*/
 
 #pragma once
 
 #include <vector>
 using std::vector;
+
+#include <map>
+using std::map;
 
 #include <glm/vec2.hpp>
 using glm::uvec2;
@@ -63,6 +69,7 @@ namespace Meridian
 		struct Attachment;
 		struct FrameBufferObject;
 		struct VertexArrayObject;
+		class UniformDirectory;
 
 	public:///Friendly Internal Forward Declarations
 
@@ -99,6 +106,8 @@ namespace Meridian
 
 		/*Create a program to have shaders later linked to it.*/
 		GLuint CreateProgram(const vector<GLuint> & p_shaders);
+
+		UniformDirectory GenerateProgramUniformDirectory(GLuint & p_handle, const vector<const char*> & p_aliases);
 
 		/*Bind the program to be used.*/
 		void BindProgram(GLuint & p_handle);//TODO: Add ability to give uniform locations and new values.
@@ -229,5 +238,26 @@ namespace Meridian
 	struct GraphicsManager::VertexArrayObject
 	{
 		GLuint m_vao, m_vbo, m_ibo, m_indexCount, m_indexType;
+	};
+
+	class GraphicsManager::UniformDirectory
+	{
+	private:///Friendly Classes
+
+		friend class GraphicsManager;
+
+	public:
+
+		/*Get the uniform location paired to the specified alias, or 0 if none exists.*/
+		inline GLint Get(const char * p_alias) const
+		{
+			auto it = m_mapping.find(string(p_alias));
+
+			return it == m_mapping.end() ? -1 : (*it).second;
+		}
+
+	private:
+
+		map<string, GLint> m_mapping;
 	};
 }

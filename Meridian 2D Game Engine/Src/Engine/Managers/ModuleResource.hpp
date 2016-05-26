@@ -24,8 +24,8 @@ using std::vector;
 #include <string>
 using std::string;
 
-#include <unordered_map>
-using std::unordered_map;
+#include <map>
+using std::map;
 
 #include <functional>
 using std::function;
@@ -176,7 +176,7 @@ namespace Meridian
 
 		string m_rootPath;
 
-		unordered_map<string, IAsset *> m_loadedAssets;
+		map<string, IAsset *> m_loadedAssets;
 
 		AssetFactory m_factoryTable[256];
 	};

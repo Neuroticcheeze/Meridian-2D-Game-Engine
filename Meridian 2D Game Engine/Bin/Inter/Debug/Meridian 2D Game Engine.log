@@ -1,8 +1,14 @@
-﻿Build started 5/25/2016 10:31:26 PM.
+﻿Build started 5/26/2016 3:20:49 PM.
      1>Project "C:\Users\Jesse\Desktop\Projects\Meridian-2D-Game-Engine\Meridian-2D-Game-Engine\Meridian 2D Game Engine\Meridian 2D Game Engine.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Bin\Inter\Debug\\" /Fd"Bin\Inter\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Src\Engine\Managers\ModuleGraphics.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Bin\Inter\Debug\\" /Fd"Bin\Inter\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Src\Engine\Core\Meridian.cpp Src\Engine\Managers\ModuleGraphics.cpp Src\Engine\Managers\ModuleResource.cpp Src\Main.cpp
+         Meridian.cpp
+         Generating Code...
+         Compiling...
+         Main.cpp
+         ModuleResource.cpp
          ModuleGraphics.cpp
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Bin\Debug\Meridian 2D Game Engine.exe" /INCREMENTAL /NOLOGO opengl32.lib glfw3.lib raknet_d.lib fmodL_vc.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"Bin\Debug\Meridian 2D Game Engine.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"Bin\Debug\Meridian 2D Game Engine.lib" /MACHINE:X86 Bin\Inter\Debug\gl_core_4_4.obj
          Bin\Inter\Debug\AssetTexture.obj
@@ -17,4 +23,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.77
+Time Elapsed 00:00:16.65

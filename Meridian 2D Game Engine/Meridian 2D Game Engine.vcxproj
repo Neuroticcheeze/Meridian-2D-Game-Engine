@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Engine\Assets\AssetTexture.hpp" />
+    <ClInclude Include="Src\Engine\Common\JenHash.hpp" />
     <ClInclude Include="Src\Engine\Core\Asset.hpp" />
     <ClInclude Include="Src\Engine\Core\Meridian.hpp" />
     <ClInclude Include="Src\Engine\Managers\ModuleGraphics.hpp" />

@@ -43,6 +43,7 @@
     <ClInclude Include="Src\Engine\Core\Asset.hpp" />
     <ClInclude Include="Src\Engine\Assets\AssetTexture.hpp" />
     <ClInclude Include="Src\Engine\Managers\ModuleResource.hpp" />
+    <ClInclude Include="Src\Engine\Common\JenHash.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Res\test.png">
