@@ -46,10 +46,15 @@ using std::vector;
 
 #include <map>
 using std::map;
+using std::pair;
+
+#include <string>
+using std::string;
 
 #include <glm/vec2.hpp>
 using glm::uvec2;
 
+typedef int GLint;
 typedef unsigned int GLuint;
 typedef unsigned int GLenum;
 
@@ -253,7 +258,7 @@ namespace Meridian
 		{
 			auto it = m_mapping.find(string(p_alias));
 
-			return it == m_mapping.end() ? -1 : (*it).second;
+			return it == m_mapping.end() ? -1 : it->second;
 		}
 
 	private:

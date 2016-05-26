@@ -27,6 +27,7 @@ GraphicsManager::~GraphicsManager()
 }
 
 GLuint program, wobbleProgram;
+GraphicsManager::UniformDirectory dir;
 GraphicsManager::VertexArrayObject vao;
 GraphicsManager::FrameBufferObject fbo;
 AssetTexture* t;
@@ -54,7 +55,7 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			""
 			"void main()"
 			"{"
-			"	oColour = texture(uTexture, gl_FragCoord.xy / 640);"
+			"	oColour = texture(uTexture, gl_FragCoord.xy / 20);"
 			"}"
 			, GL_FRAGMENT_SHADER);
 
@@ -77,12 +78,14 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			"#version 410\n"
 			""
 			"uniform sampler2D uTexture;"
+			"uniform float wobbleTime;"
 			""
 			"out vec4 oColour;"
 			""
 			"void main()"
 			"{"
-			"	oColour = mix(texture(uTexture, gl_FragCoord.xy / 320), texture(uTexture, 1.0 - (gl_FragCoord.xy / 320)), 0.5);"
+			"	float time = sin(wobbleTime * 2 + gl_FragCoord.x / 33);"
+			"	oColour = texture(uTexture, (gl_FragCoord.xy + vec2(1, time * 50)) / 480);"
 			"}"
 			, GL_FRAGMENT_SHADER);
 
@@ -91,9 +94,9 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 
 	vao = CreateVertexArrayObject();
 	
-	fbo = CreateFrameBufferObject(320, 240, 
+	fbo = CreateFrameBufferObject(64, 48, 
 	{
-		Attachment::CreateColour(GL_RGB8, GL_REPEAT, GL_LINEAR)
+		Attachment::CreateColour(GL_RGB8, GL_CLAMP_TO_EDGE, GL_LINEAR)
 	}, 
 	&Attachment::CreateDepth(GL_DEPTH_COMPONENT24));
 
@@ -103,6 +106,8 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 	resourceManager->LoadResources();
 	resourceManager->GetAsset("wup", &t);
 	CreateTexture(*t, GL_NEAREST, GL_REPEAT);
+
+	dir = GenerateProgramUniformDirectory(wobbleProgram, {"wobbleTime"});
 }
 
 void GraphicsManager::Update(MeridianEngine * p_engine, const float & p_dt)
@@ -121,6 +126,7 @@ void GraphicsManager::Render(MeridianEngine * p_engine)
 
 	EndFrameBufferObject();
 	BindProgram(wobbleProgram);
+	glUniform1f(dir.Get("wobbleTime"), (float)glfwGetTime());
 	BindFrameBufferObjectTexture(fbo, { 0 });
 	DrawVertexArrayObject(vao, GL_TRIANGLES);
 
@@ -227,8 +233,10 @@ GraphicsManager::UniformDirectory GraphicsManager::GenerateProgramUniformDirecto
 
 	for (const char * alias : p_aliases)
 	{
-		ud.m_mapping[string(alias)] = glGetUniformLocation(p_handle, alias);
+		ud.m_mapping.insert(pair<string, GLuint>(string(alias), glGetUniformLocation(p_handle, alias)));
 	}
+
+	return ud;
 }
 
 void GraphicsManager::BindProgram(GLuint & p_handle)
@@ -345,6 +353,7 @@ void GraphicsManager::BeginFrameBufferObject(const FrameBufferObject & p_handle)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, p_handle.m_handle);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT * static_cast<int>(p_handle.m_hasDepthBuffer));//Clears depth only if there's a depth buffer attached.
+	glViewport(0, 0, p_handle.m_dimensions.x, p_handle.m_dimensions.y);
 }
 
 void GraphicsManager::BindFrameBufferObjectTexture(const FrameBufferObject & p_handle, const vector<GLuint> & p_units)
@@ -363,6 +372,7 @@ void GraphicsManager::BindFrameBufferObjectTexture(const FrameBufferObject & p_h
 void GraphicsManager::EndFrameBufferObject()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, 640, 480);
 }
 
 void GraphicsManager::DeleteFrameBufferObject(FrameBufferObject & p_handle, const bool & p_keepShell)
