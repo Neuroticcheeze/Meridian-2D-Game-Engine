@@ -37,9 +37,15 @@
 //				UniformDirectory
 //					-Get
 //
+//				Attribute
+//					-Create
+//
 ===================================================================*/
 
 #pragma once
+
+#include <gl_core_4_4.h>
+#include <glfw3.h>
 
 #include <vector>
 using std::vector;
@@ -53,10 +59,6 @@ using std::string;
 
 #include <glm/vec2.hpp>
 using glm::uvec2;
-
-typedef int GLint;
-typedef unsigned int GLuint;
-typedef unsigned int GLenum;
 
 namespace Meridian
 {
@@ -75,6 +77,7 @@ namespace Meridian
 		struct FrameBufferObject;
 		struct VertexArrayObject;
 		class UniformDirectory;
+		struct Attribute;
 
 	public:///Friendly Internal Forward Declarations
 
@@ -151,8 +154,59 @@ namespace Meridian
 		/*Delete the frame buffer object and any attachments.*/
 		void DeleteFrameBufferObject(FrameBufferObject & p_handle, const bool & p_keepShell = false); 
 
-		/*Generate a vertex array object*/
-		VertexArrayObject CreateVertexArrayObject();//TODO: Make this more customisable!
+		/*Generate a vertex array object given a vertex buffer, an index buffer, and a list of attributes.*/
+		template <typename T>
+		VertexArrayObject CreateVertexArrayObject(const vector<T> p_vertices, const vector<GLubyte> & p_indices, const vector<Attribute> & p_attributes)
+		{
+			VertexArrayObject vao;
+
+			vao.m_indexCount = p_indices.size();
+
+			vao.m_indexType = GL_UNSIGNED_BYTE;
+
+			glGenVertexArrays(1, &vao.m_vao); // Create our Vertex Array Object  
+			glBindVertexArray(vao.m_vao); // Bind our Vertex Array Object so we can use it  
+
+			glGenBuffers(1, &vao.m_vbo); // Generate our Vertex Buffer Object  
+			glBindBuffer(GL_ARRAY_BUFFER, vao.m_vbo); // Bind our Vertex Buffer Object  
+			glBufferData(GL_ARRAY_BUFFER, p_vertices.size() * sizeof(T), p_vertices.data(), GL_STATIC_DRAW); // Set the size and data of our VBO and set it to STATIC_DRAW  
+																														 //We could have actually made one big IBO for both the quad and triangle.
+			glGenBuffers(1, &vao.m_ibo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vao.m_ibo);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_indices.size() * sizeof(GLubyte), p_indices.data(), GL_STATIC_DRAW);
+
+			glBindVertexBuffer(0, vao.m_vbo, 0, sizeof(T));
+
+			int j = -1, offset = 0;
+			for (auto & attr : p_attributes)
+			{
+				glEnableVertexAttribArray(++j);
+				glVertexAttribFormat(j, attr.m_count, attr.m_type, attr.m_normalised, offset);
+				glVertexAttribBinding(j, 0);
+
+				unsigned int typesize = 0;
+
+				switch (attr.m_type)
+				{
+				case GL_BOOL:			typesize = sizeof(char);	break;
+				case GL_BYTE:			typesize = sizeof(char);	break;
+				case GL_UNSIGNED_BYTE:	typesize = sizeof(char);	break;
+				case GL_SHORT:			typesize = sizeof(short);	break;
+				case GL_UNSIGNED_SHORT: typesize = sizeof(short);	break;
+				case GL_INT:			typesize = sizeof(int);		break;
+				case GL_UNSIGNED_INT:	typesize = sizeof(int);		break;
+				case GL_FLOAT:			typesize = sizeof(float);	break;
+				default: assert(false);
+				}
+
+				offset += attr.m_count * typesize;
+			}
+
+			glBindVertexArray(0);
+
+			return vao;
+		}
+
 
 		/*Draw the specified vertex array object in the provided draw mode.*/
 		void DrawVertexArrayObject(const VertexArrayObject & p_handle, const GLenum & p_drawMode);
@@ -188,6 +242,8 @@ namespace Meridian
 	=============================================================================*/
 	struct GraphicsManager::Attachment
 	{
+		/*Create an attachment to be used for a framebuffer object 
+		of type colour.*/
 		static Attachment CreateColour(const GLuint & p_format, const GLuint & p_wrapMode, const GLuint & p_filterMode)
 		{
 			Attachment att;
@@ -202,6 +258,9 @@ namespace Meridian
 			return att;
 		}
 
+		/*Create an attachment to be used for a framebuffer object 
+		of type depth. Only one of these can exist per frame buffer 
+		object.*/
 		static Attachment CreateDepth(const GLuint & p_format)
 		{
 			Attachment att;
@@ -237,7 +296,7 @@ namespace Meridian
 	};
 
 	/*===============================================================
-	A weapper to store handles to an OpenGL VAO, VBO, and IBO. It 
+	A wrapper to store handles to an OpenGL VAO, VBO, and IBO. It 
 	represents a mesh or model used by ogl.
 	===============================================================*/
 	struct GraphicsManager::VertexArrayObject
@@ -245,6 +304,10 @@ namespace Meridian
 		GLuint m_vao, m_vbo, m_ibo, m_indexCount, m_indexType;
 	};
 
+	/*===================================================================
+	An object to store mappings between handles to uniform locations for 
+	the specified shader program, alongside their human-friendly names.
+	===================================================================*/
 	class GraphicsManager::UniformDirectory
 	{
 	private:///Friendly Classes
@@ -264,5 +327,29 @@ namespace Meridian
 	private:
 
 		map<string, GLint> m_mapping;
+	};
+
+
+	/*===============================================================
+	An object to store the information needed to define a new attribute
+	for a vertex structure inside a vertex buffer object; telling OpenGL
+	how each part of the vertex is laid out inside video memory.
+	===============================================================*/
+	struct GraphicsManager::Attribute
+	{
+		static Attribute Create(const unsigned int & p_count, const GLenum & p_type, const bool & p_normalised = false)
+		{
+			Attribute attr;
+
+			attr.m_count = p_count;
+			attr.m_type = p_type;
+			attr.m_normalised = p_normalised;
+
+			return attr;
+		}
+
+		unsigned int m_count;
+		GLenum m_type;
+		bool m_normalised;
 	};
 }

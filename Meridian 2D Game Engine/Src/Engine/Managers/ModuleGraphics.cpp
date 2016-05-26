@@ -12,8 +12,6 @@
 #include "..\Core\Meridian.hpp"
 #include "..\Assets\AssetTexture.hpp"
 #include <assert.h>
-#include <gl_core_4_4.h>
-#include <glfw3.h>
 
 using namespace Meridian;
 
@@ -32,6 +30,9 @@ GraphicsManager::VertexArrayObject vao;
 GraphicsManager::FrameBufferObject fbo;
 AssetTexture* t;
 #include "ModuleResource.hpp"
+#include <glm\common.hpp>
+using glm::vec2;
+using glm::vec3;
 void GraphicsManager::Initialise(MeridianEngine * p_engine)
 {
 	{
@@ -67,9 +68,13 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			"#version 410\n"
 			""
 			"layout (location = 0) in vec2 lPosition;"
+			"layout (location = 1) in vec3 lColour;"
+			""
+			"out vec3 ioColour;"
 			""
 			"void main()"
 			"{"
+			"	ioColour = lColour;"
 			"	gl_Position = vec4(lPosition, 0.0, 1.0);"
 			"}"
 			, GL_VERTEX_SHADER);
@@ -80,19 +85,41 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			"uniform sampler2D uTexture;"
 			"uniform float wobbleTime;"
 			""
+			"in vec3 ioColour;"
+			""
 			"out vec4 oColour;"
 			""
 			"void main()"
 			"{"
 			"	float time = sin(wobbleTime * 2 + gl_FragCoord.x / 33);"
-			"	oColour = texture(uTexture, (gl_FragCoord.xy + vec2(1, time * 50)) / 480);"
+			"	oColour = mix(texture(uTexture, (gl_FragCoord.xy + vec2(1, time * 50)) / 480), vec4(ioColour, 1.0), 0.75);"
 			"}"
 			, GL_FRAGMENT_SHADER);
 
 		wobbleProgram = CreateProgram({ vertShader, fragShader });
 	}
 
-	vao = CreateVertexArrayObject();
+	struct Vert
+	{
+		Vert(vec2 _x, vec3 _y) : x(_x), y(_y) {}
+		vec2 x;
+		vec3 y;
+	};
+	vao = CreateVertexArrayObject<Vert>(
+	{
+		Vert(vec2(-1, -1), vec3(1,0,0)),
+		Vert(vec2(-1, +1), vec3(1,1,0)),
+		Vert(vec2(+1, +1), vec3(0,0,1)),
+		Vert(vec2(+1, -1), vec3(0.7F,0,1)),
+	}, 
+	{
+		0, 1, 2, 
+		0, 2, 3,
+	}, 
+	{
+		Attribute::Create(2, GL_FLOAT),
+		Attribute::Create(3, GL_FLOAT),
+	});
 	
 	fbo = CreateFrameBufferObject(64, 48, 
 	{
@@ -394,52 +421,6 @@ void GraphicsManager::DeleteFrameBufferObject(FrameBufferObject & p_handle, cons
 		p_handle.m_handle = 0;
 		p_handle.m_hasDepthBuffer = false;
 	}
-}
-
-GraphicsManager::VertexArrayObject GraphicsManager::CreateVertexArrayObject()
-{
-	float vertices[8] =
-	{
-		-1, -1,
-		+1, -1,
-		+1, +1,
-		-1, +1,
-	};
-
-	GLubyte indices[6] =
-	{
-		0, 3, 2,
-		0, 2, 1
-	};
-
-	VertexArrayObject vao;
-
-	vao.m_indexCount = 6;
-
-	vao.m_indexType = GL_UNSIGNED_BYTE;
-
-	glGenVertexArrays(1, &vao.m_vao); // Create our Vertex Array Object  
-	glBindVertexArray(vao.m_vao); // Bind our Vertex Array Object so we can use it  
-
-	glGenBuffers(1, &vao.m_vbo); // Generate our Vertex Buffer Object  
-	glBindBuffer(GL_ARRAY_BUFFER, vao.m_vbo); // Bind our Vertex Buffer Object  
-	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), vertices, GL_STATIC_DRAW); // Set the size and data of our VBO and set it to STATIC_DRAW  
-
-
-	//Create the IBO for the triangle
-	//16 bit indices
-	//We could have actually made one big IBO for both the quad and triangle.
-	glGenBuffers(1, &vao.m_ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vao.m_ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLubyte), indices, GL_STATIC_DRAW);
-
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // Set up our vertex attributes pointer  
-
-	glBindVertexArray(0); // Disable our Vertex Buffer Object
-
-	return vao;
 }
 
 void GraphicsManager::DrawVertexArrayObject(const VertexArrayObject & p_handle, const GLenum & p_drawMode)
