@@ -26,47 +26,81 @@ GraphicsManager::~GraphicsManager()
 
 }
 
-GLuint program;
-GLuint vao, count;
+GLuint program, wobbleProgram;
+GraphicsManager::VertexArrayObject vao;
+GraphicsManager::FrameBufferObject fbo;
 AssetTexture* t;
 #include "ModuleResource.hpp"
 void GraphicsManager::Initialise(MeridianEngine * p_engine)
 {
-	GLuint vertShader = CreateShader(
-		"#version 410\n"
-		""
-		"layout (location = 0) in vec2 lPosition;"
-		""
-		"void main()"
-		"{"
-		"	gl_Position = vec4(lPosition, 0.0, 1.0);"
-		"}"
-		, GL_VERTEX_SHADER);
+	{
+		GLuint vertShader = CreateShader(
+			"#version 410\n"
+			""
+			"layout (location = 0) in vec2 lPosition;"
+			""
+			"void main()"
+			"{"
+			"	gl_Position = vec4(lPosition, 0.0, 1.0);"
+			"}"
+			, GL_VERTEX_SHADER);
 
-	GLuint fragShader = CreateShader(
-		"#version 410\n"
-		""
-		"uniform sampler2D uTexture;"
-		""
-		"out vec4 oColour;"
-		""
-		"void main()"
-		"{"
-		"	oColour = texture(uTexture, gl_FragCoord.xy / 480);"
-		"}"
-		, GL_FRAGMENT_SHADER);
+		GLuint fragShader = CreateShader(
+			"#version 410\n"
+			""
+			"uniform sampler2D uTexture;"
+			""
+			"out vec4 oColour;"
+			""
+			"void main()"
+			"{"
+			"	oColour = texture(uTexture, gl_FragCoord.xy / 640);"
+			"}"
+			, GL_FRAGMENT_SHADER);
 
-	program = CreateProgram({ vertShader, fragShader });
-	VertexArrayObject _vao = CreateVertexArrayObject();
-	vao = _vao.m_vao;
-	count = _vao.m_indexCount;
+		program = CreateProgram({ vertShader, fragShader });
+	}
+
+	{
+		GLuint vertShader = CreateShader(
+			"#version 410\n"
+			""
+			"layout (location = 0) in vec2 lPosition;"
+			""
+			"void main()"
+			"{"
+			"	gl_Position = vec4(lPosition, 0.0, 1.0);"
+			"}"
+			, GL_VERTEX_SHADER);
+
+		GLuint fragShader = CreateShader(
+			"#version 410\n"
+			""
+			"uniform sampler2D uTexture;"
+			""
+			"out vec4 oColour;"
+			""
+			"void main()"
+			"{"
+			"	oColour = mix(texture(uTexture, gl_FragCoord.xy / 320), texture(uTexture, 1.0 - (gl_FragCoord.xy / 320)), 0.5);"
+			"}"
+			, GL_FRAGMENT_SHADER);
+
+		wobbleProgram = CreateProgram({ vertShader, fragShader });
+	}
+
+	vao = CreateVertexArrayObject();
+	
+	fbo = CreateFrameBufferObject(320, 240, 
+	{
+		Attachment::CreateColour(GL_RGB8, GL_REPEAT, GL_LINEAR)
+	}, 
+	&Attachment::CreateDepth(GL_DEPTH_COMPONENT24));
 
 	auto resourceManager = p_engine->GetResourceManager();
-	resourceManager->CreateAsset<Meridian::AssetTexture>("wup", resourceManager->GetPath("tree.png"));
+	resourceManager->CreateAsset<Meridian::AssetTexture>("wup", resourceManager->GetPath("tree.jpg"));
 	resourceManager->SaveResources();
 	resourceManager->LoadResources();
-
-
 	resourceManager->GetAsset("wup", &t);
 	CreateTexture(*t, GL_NEAREST, GL_REPEAT);
 }
@@ -80,18 +114,27 @@ void GraphicsManager::Render(MeridianEngine * p_engine)
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glViewport(0, 0, 100, 100);
+	BeginFrameBufferObject(fbo);
+	BindProgram(program);
 	BindTexture(*t, 0);
-	glUseProgram(program);
-	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+	DrawVertexArrayObject(vao, GL_TRIANGLES);
+
+	EndFrameBufferObject();
+	BindProgram(wobbleProgram);
+	BindFrameBufferObjectTexture(fbo, { 0 });
+	DrawVertexArrayObject(vao, GL_TRIANGLES);
+
 
 	glfwSwapBuffers(p_engine->GetWindow());
 }
 
 void GraphicsManager::Finalise(MeridianEngine * p_engine)
 {
-
+	DeleteVertexArrayObject(vao);
+	DeleteProgram(program);
+	DeleteProgram(wobbleProgram);
+	DeleteFrameBufferObject(fbo);
+	DeleteTexture(*t);
 }
 
 GLuint GraphicsManager::CreateShader(const char * p_source, const GLenum & p_type)
@@ -266,6 +309,8 @@ GraphicsManager::FrameBufferObject GraphicsManager::CreateFrameBufferObject(
 
 	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	return fbo;
 }
 
@@ -289,15 +334,12 @@ void GraphicsManager::ResizeFrameBufferObject(
 void GraphicsManager::BeginFrameBufferObject(const FrameBufferObject & p_handle)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, p_handle.m_handle);
-	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT * static_cast<int>(p_handle.m_hasDepthBuffer));//Clears depth only if there's a depth buffer attached.
-	//-------------------------
-	glViewport(0, 0, p_handle.m_dimensions.x, p_handle.m_dimensions.y);
 }
 
 void GraphicsManager::BindFrameBufferObjectTexture(const FrameBufferObject & p_handle, const vector<GLuint> & p_units)
 {
-	assert(p_handle.m_attachments.size() <= p_units.size());
+	assert((p_handle.m_attachments.size() - static_cast<unsigned int>(p_handle.m_hasDepthBuffer)) <= p_units.size());
 
 	int t = -1;
 
@@ -352,6 +394,10 @@ GraphicsManager::VertexArrayObject GraphicsManager::CreateVertexArrayObject()
 
 	VertexArrayObject vao;
 
+	vao.m_indexCount = 6;
+
+	vao.m_indexType = GL_UNSIGNED_BYTE;
+
 	glGenVertexArrays(1, &vao.m_vao); // Create our Vertex Array Object  
 	glBindVertexArray(vao.m_vao); // Bind our Vertex Array Object so we can use it  
 
@@ -372,8 +418,6 @@ GraphicsManager::VertexArrayObject GraphicsManager::CreateVertexArrayObject()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // Set up our vertex attributes pointer  
 
 	glBindVertexArray(0); // Disable our Vertex Buffer Object
-
-	vao.m_indexType = GL_UNSIGNED_BYTE;
 
 	return vao;
 }

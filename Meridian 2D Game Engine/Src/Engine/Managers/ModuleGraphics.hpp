@@ -58,7 +58,7 @@ namespace Meridian
 	=============================================================================*/
 	class GraphicsManager
 	{
-	private:///Internal Forward Declarations
+	public:///Internal Forward Declarations
 
 		struct Attachment;
 		struct FrameBufferObject;
@@ -149,7 +149,7 @@ namespace Meridian
 		/*Create a new texture from AssetTexture.*/
 		void CreateTexture(AssetTexture & p_assetTexture, const GLenum & p_filterMode, const GLenum & p_wrapMode);
 
-		/*Bind the specified AssetTextureto be used in rendering given a texture unit to be bound to starting from 0, not GL_TEXTURE0.*/
+		/*Bind the specified AssetTexture to be used in rendering given a texture unit to be bound to starting from 0, not GL_TEXTURE0.*/
 		void BindTexture(const AssetTexture & p_assetTexture, const GLuint & p_textureUnit);
 
 		/*Delete the resources "owned" by AssetTexture from video memory.*/
