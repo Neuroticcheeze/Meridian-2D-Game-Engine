@@ -10,17 +10,26 @@
 //					-CreateShader
 //					-DeleteShader
 //					-CreateProgram
+//					-BindProgram
 //					-DeleteProgram
 //					-CreateFrameBufferObject
 //					-BeginFrameBufferObject
+//					-BindFrameBufferObjectTexture
 //					-EndFrameBufferObject
 //					-DeleteFrameBufferObject
+//					-CreateVertexBufferObject
+//					-DrawVertexBufferObject
+//					-DeleteVertexBufferObject
+//
+//				AttachmentType
 //
 //				Attachment
+//					-CreateColour
+//					-CreateDepth
 //
 //				FrameBufferObject
 //
-//				Type (enum)
+//				VertexBufferObject
 //
 ===================================================================*/
 
@@ -60,7 +69,7 @@ namespace Meridian
 
 	private:///Member Functions
 
-			/*Initialise this module and load anything it needs to run long-term.*/
+		/*Initialise this module and load anything it needs to run long-term.*/
 		void Initialise(MeridianEngine * p_engine);
 
 		/*Update this module inside the engine's gameloop.*/
@@ -85,6 +94,11 @@ namespace Meridian
 		/*Create a program to have shaders later linked to it.*/
 		GLuint CreateProgram(const vector<GLuint> & p_shaders);
 
+		/*Bind the program to be used.*/
+		void BindProgram(GLuint & p_handle);//TODO: Add ability to give uniform locations and new values.
+
+		/*Delete a shader program. This will not delete the individual 
+		attached shaders as far as non-gl doc is concerned.*/
 		void DeleteProgram(GLuint & p_handle);
 
 		/*Create a framebuffer object given the width and height, at least one colour attachment, 
@@ -106,17 +120,36 @@ namespace Meridian
 		This will also clear the buffer automatically.*/
 		void BeginFrameBufferObject(const FrameBufferObject & p_handle);
 
+		/*Bind this FBO to be used in rendering as a texture. It will map
+		all attachments except for the depth attachment to the specified
+		list of opengl texture units.*/
+		void BindFrameBufferObjectTexture(const FrameBufferObject & p_handle, const vector<GLuint> & p_units);
+
 		/*Go back to the screen buffer.*/
 		void EndFrameBufferObject();
 
 		/*Delete the frame buffer object and any attachments.*/
 		void DeleteFrameBufferObject(FrameBufferObject & p_handle, const bool & p_keepShell = false); 
 
-		/*Generate a vertex array object*///TODO: Make this more customisable!
-		VertexArrayObject CreateVertexArrayObject();
-		//TODO: Add a delete and draw for the VAO.
+		/*Generate a vertex array object*/
+		VertexArrayObject CreateVertexArrayObject();//TODO: Make this more customisable!
+
+		/*Draw the specified vertex array object in the provided draw mode.*/
+		void DrawVertexArrayObject(const VertexArrayObject & p_handle, const GLenum & p_drawMode);
+
+		/*Delete the vertex array object from video memory.*/
+		void DeleteVertexArrayObject(const VertexArrayObject & p_handle);
 
 	private:///Member Fields
+	};
+
+	/*=============================================================================
+	The type of attachment appended to an FBO. Either a colour or depth attachment.
+	=============================================================================*/
+	enum class AttachmentType
+	{
+		ATT_COLOUR,
+		ATT_DEPTH
 	};
 
 	/*=============================================================================
@@ -126,20 +159,38 @@ namespace Meridian
 	=============================================================================*/
 	struct GraphicsManager::Attachment
 	{
-		enum class Type;
-
-		Attachment(const GLuint & p_format, const Type & p_type) :
-			m_format(p_format),
-			m_type(p_type),
-			m_handle(0)
+		static Attachment CreateColour(const GLuint & p_format, const GLuint & p_wrapMode, const GLuint & p_filterMode)
 		{
+			Attachment att;
 
+			att.m_handle		= 0;
+			att.m_format		= p_format;
+			att.m_tHandle		= 0;
+			att.m_tWrapMode		= p_wrapMode;
+			att.m_tFilterMode	= p_filterMode;
+			att.m_type			= AttachmentType::ATT_COLOUR;
+
+			return att;
+		}
+
+		static Attachment CreateDepth(const GLuint & p_format)
+		{
+			Attachment att;
+
+			att.m_handle = 0;
+			att.m_format = p_format;
+			att.m_type = AttachmentType::ATT_DEPTH;
+
+			return att;
 		}
 
 		GLuint
 			m_handle,
-			m_format;
-		Type
+			m_format,
+			m_tHandle,
+			m_tWrapMode,
+			m_tFilterMode;
+		AttachmentType
 			m_type;
 	};
 
@@ -156,17 +207,12 @@ namespace Meridian
 		bool m_hasDepthBuffer;
 	};
 
-	/*=============================================================================
-	The type of attachment appended to an FBO. Either a colour or depth attachment.
-	=============================================================================*/
-	enum class GraphicsManager::Attachment::Type
-	{
-		ATT_COLOUR,
-		ATT_DEPTH
-	};
-
+	/*===============================================================
+	A weapper to store handles to an OpenGL VAO, VBO, and IBO. It 
+	represents a mesh or model used by ogl.
+	===============================================================*/
 	struct GraphicsManager::VertexArrayObject
 	{
-		GLuint m_vao, m_vbo, m_ibo, m_indexCount;
+		GLuint m_vao, m_vbo, m_ibo, m_indexCount, m_indexType;
 	};
 }
