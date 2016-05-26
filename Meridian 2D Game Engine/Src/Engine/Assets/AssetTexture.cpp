@@ -16,7 +16,7 @@
 
 using namespace Meridian;
 
-const AssetTexture AssetTexture::MISSING_TEXTURE(2, 2, 3, { 0, 0, 0, 255, 0, 255, 255, 0, 255, 0, 0, 0 });
+const AssetTexture AssetTexture::MISSING_TEXTURE(2, 2, 4, { 0, 0, 0, 255, 255, 0, 255, 255, 255, 0, 255, 255, 0, 0, 0, 255 });
 
 AssetTexture::AssetTexture(const unsigned short & p_width, const unsigned short & p_height, const byte & p_channels, const vector<byte> p_pixelData) :
 

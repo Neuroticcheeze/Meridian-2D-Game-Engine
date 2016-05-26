@@ -20,6 +20,9 @@
 //					-CreateVertexBufferObject
 //					-DrawVertexBufferObject
 //					-DeleteVertexBufferObject
+//					-CreateTexture
+//					-BindTexture
+//					-DeleteTexture
 //
 //				AttachmentType
 //
@@ -46,6 +49,9 @@ typedef unsigned int GLenum;
 
 namespace Meridian
 {
+	///External Forward Declarations
+	class AssetTexture;
+
 	/*=============================================================================
 	Responsible for coordinating how everything from text to lighting functions in 
 	Meridian, as well as providing the ability to tailor the system to your game.
@@ -139,6 +145,15 @@ namespace Meridian
 
 		/*Delete the vertex array object from video memory.*/
 		void DeleteVertexArrayObject(const VertexArrayObject & p_handle);
+
+		/*Create a new texture from AssetTexture.*/
+		void CreateTexture(AssetTexture & p_assetTexture, const GLenum & p_filterMode, const GLenum & p_wrapMode);
+
+		/*Bind the specified AssetTextureto be used in rendering given a texture unit to be bound to starting from 0, not GL_TEXTURE0.*/
+		void BindTexture(const AssetTexture & p_assetTexture, const GLuint & p_textureUnit);
+
+		/*Delete the resources "owned" by AssetTexture from video memory.*/
+		void DeleteTexture(AssetTexture & p_assetTexture);
 
 	private:///Member Fields
 	};

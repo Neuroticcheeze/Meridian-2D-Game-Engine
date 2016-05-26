@@ -13,15 +13,15 @@ void main()
 	engine->HookToPreEvent([]
 		(Meridian::MeridianEngine * engine)
 		{
-			auto resourceManager = engine->GetResourceManager();
-			resourceManager->CreateAsset<Meridian::AssetTexture>("test_texture", resourceManager->GetPath("test.png"));
-			resourceManager->CreateAsset<Meridian::AssetTexture>("tree", resourceManager->GetPath("tree.png"));
+			//auto resourceManager = engine->GetResourceManager();
+			//resourceManager->CreateAsset<Meridian::AssetTexture>("test_texture", resourceManager->GetPath("test.png"));
+			//resourceManager->CreateAsset<Meridian::AssetTexture>("tree", resourceManager->GetPath("tree.png"));
 
-			Meridian::AssetTexture * test = nullptr;
-			resourceManager->GetAsset("test_texture", &test);
+			//Meridian::AssetTexture * test = nullptr;
+			//resourceManager->GetAsset("test_texture", &test);
 
-			resourceManager->SaveResources();
-			resourceManager->LoadResources();
+			//resourceManager->SaveResources();
+			//resourceManager->LoadResources();
 		}
 	);
 

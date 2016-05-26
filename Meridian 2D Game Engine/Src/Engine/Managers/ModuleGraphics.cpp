@@ -10,6 +10,7 @@
 
 #include "ModuleGraphics.hpp"
 #include "..\Core\Meridian.hpp"
+#include "..\Assets\AssetTexture.hpp"
 #include <assert.h>
 #include <gl_core_4_4.h>
 #include <glfw3.h>
@@ -27,6 +28,8 @@ GraphicsManager::~GraphicsManager()
 
 GLuint program;
 GLuint vao, count;
+AssetTexture* t;
+#include "ModuleResource.hpp"
 void GraphicsManager::Initialise(MeridianEngine * p_engine)
 {
 	GLuint vertShader = CreateShader(
@@ -43,11 +46,13 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 	GLuint fragShader = CreateShader(
 		"#version 410\n"
 		""
+		"uniform sampler2D uTexture;"
+		""
 		"out vec4 oColour;"
 		""
 		"void main()"
 		"{"
-		"	oColour = vec4(gl_FragCoord.xy / 1000, 0.0, 1.0);"
+		"	oColour = texture(uTexture, gl_FragCoord.xy / 480);"
 		"}"
 		, GL_FRAGMENT_SHADER);
 
@@ -55,6 +60,15 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 	VertexArrayObject _vao = CreateVertexArrayObject();
 	vao = _vao.m_vao;
 	count = _vao.m_indexCount;
+
+	auto resourceManager = p_engine->GetResourceManager();
+	resourceManager->CreateAsset<Meridian::AssetTexture>("wup", resourceManager->GetPath("tree.png"));
+	resourceManager->SaveResources();
+	resourceManager->LoadResources();
+
+
+	resourceManager->GetAsset("wup", &t);
+	CreateTexture(*t, GL_NEAREST, GL_REPEAT);
 }
 
 void GraphicsManager::Update(MeridianEngine * p_engine, const float & p_dt)
@@ -67,6 +81,7 @@ void GraphicsManager::Render(MeridianEngine * p_engine)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//glViewport(0, 0, 100, 100);
+	BindTexture(*t, 0);
 	glUseProgram(program);
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
@@ -226,6 +241,7 @@ GraphicsManager::FrameBufferObject GraphicsManager::CreateFrameBufferObject(
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, att.m_tWrapMode);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, att.m_tWrapMode);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + ++j, att.m_tHandle, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	//If the suer wants a depth buffer attached...
@@ -371,4 +387,51 @@ void GraphicsManager::DrawVertexArrayObject(const VertexArrayObject & p_handle, 
 void GraphicsManager::DeleteVertexArrayObject(const VertexArrayObject & p_handle)
 {
 
+}
+
+void GraphicsManager::CreateTexture(AssetTexture & p_assetTexture, const GLenum & p_filterMode, const GLenum & p_wrapMode)
+{
+	GLuint format, internalFormat;
+
+	assert(p_assetTexture.m_channels >= 1 && p_assetTexture.m_channels <= 4);
+
+	switch (p_assetTexture.m_channels)
+	{
+	case 1:	
+		format = GL_RGB;
+		internalFormat = GL_R8;
+		break;
+	case 2:	
+		format = GL_RGB;
+		internalFormat = GL_RG8;
+		break;
+	case 3:
+		format = GL_RGB;
+		internalFormat = GL_RGB8;
+		break;
+	case 4:
+		format = GL_RGBA;
+		internalFormat = GL_RGBA8;
+		break;
+	}
+
+	glGenTextures(1, &p_assetTexture.m_glTextureHandle);
+	glBindTexture(GL_TEXTURE_2D, p_assetTexture.m_glTextureHandle);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, p_assetTexture.m_width, p_assetTexture.m_height, 0, format, GL_UNSIGNED_BYTE, p_assetTexture.m_pixelData.data());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, p_filterMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, p_filterMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, p_wrapMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, p_wrapMode);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void GraphicsManager::BindTexture(const AssetTexture & p_assetTexture, const GLuint & p_textureUnit)
+{
+	glActiveTexture(GL_TEXTURE0 + p_textureUnit);
+	glBindTexture(GL_TEXTURE_2D, p_assetTexture.m_glTextureHandle);
+}
+
+void GraphicsManager::DeleteTexture(AssetTexture & p_assetTexture)
+{
+	glDeleteTextures(1, &p_assetTexture.m_glTextureHandle);
 }
