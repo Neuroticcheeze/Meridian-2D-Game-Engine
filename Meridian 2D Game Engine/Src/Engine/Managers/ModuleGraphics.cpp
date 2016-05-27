@@ -40,10 +40,17 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			"#version 410\n"
 			""
 			"layout (location = 0) in vec2 lPosition;"
+			"layout (location = 1) in vec3 lColour;"
+			"layout (location = 2) in vec2 lTexCoords;"
+			""
+			"out vec3 ioColour;"
+			"out vec2 ioTexCoords;"
 			""
 			"void main()"
 			"{"
-			"	gl_Position = vec4(lPosition, 0.0, 1.0);"
+			"	ioColour = lColour;"
+			"	ioTexCoords = lTexCoords;"
+			"	gl_Position = vec4(lPosition * 0.5, 0.0, 1.0);"
 			"}"
 			, GL_VERTEX_SHADER);
 
@@ -53,10 +60,11 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			"uniform sampler2D uTexture;"
 			""
 			"out vec4 oColour;"
+			"in vec2 ioTexCoords;"
 			""
 			"void main()"
 			"{"
-			"	oColour = texture(uTexture, gl_FragCoord.xy / 500);"
+			"	oColour = texture(uTexture, ioTexCoords);"
 			"}"
 			, GL_FRAGMENT_SHADER);
 
@@ -78,7 +86,7 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			"{"
 			"	ioColour = lColour;"
 			"	ioTexCoords = lTexCoords;"
-			"	gl_Position = vec4(lPosition, 0.0, 1.0);"
+			"	gl_Position = vec4(lPosition * vec2(1, -1), 0.0, 1.0);"
 			"}"
 			, GL_VERTEX_SHADER);
 
@@ -96,7 +104,7 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			"void main()"
 			"{"
 			"	float time = sin(wobbleTime * 2 + ioTexCoords.x * 20);"
-			"	oColour = texture(uTexture, ioTexCoords + vec2(0, time * 0.05));"
+			"	oColour = (texture(uTexture, ioTexCoords + vec2(0.02, 0) + vec2(0, time * 0.05)) + texture(uTexture, ioTexCoords + vec2(-0.02, 0) + vec2(0, time * 0.05)) + texture(uTexture, ioTexCoords + vec2(0, 0.02) + vec2(0, time * 0.05)) + texture(uTexture, ioTexCoords + vec2(0, -0.02) + vec2(0, time * 0.05)) + texture(uTexture, ioTexCoords + vec2(0, time * 0.05))) / 5;"
 			"}"
 			, GL_FRAGMENT_SHADER);
 
