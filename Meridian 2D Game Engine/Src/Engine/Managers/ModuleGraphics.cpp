@@ -56,7 +56,7 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			""
 			"void main()"
 			"{"
-			"	oColour = texture(uTexture, gl_FragCoord.xy / 20);"
+			"	oColour = texture(uTexture, gl_FragCoord.xy / 500);"
 			"}"
 			, GL_FRAGMENT_SHADER);
 
@@ -69,12 +69,15 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			""
 			"layout (location = 0) in vec2 lPosition;"
 			"layout (location = 1) in vec3 lColour;"
+			"layout (location = 2) in vec2 lTexCoords;"
 			""
 			"out vec3 ioColour;"
+			"out vec2 ioTexCoords;"
 			""
 			"void main()"
 			"{"
 			"	ioColour = lColour;"
+			"	ioTexCoords = lTexCoords;"
 			"	gl_Position = vec4(lPosition, 0.0, 1.0);"
 			"}"
 			, GL_VERTEX_SHADER);
@@ -86,13 +89,14 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 			"uniform float wobbleTime;"
 			""
 			"in vec3 ioColour;"
+			"in vec2 ioTexCoords;"
 			""
 			"out vec4 oColour;"
 			""
 			"void main()"
 			"{"
-			"	float time = sin(wobbleTime * 2 + gl_FragCoord.x / 33);"
-			"	oColour = mix(texture(uTexture, (gl_FragCoord.xy + vec2(1, time * 50)) / 480), vec4(ioColour, 1.0), 0.75);"
+			"	float time = sin(wobbleTime * 2 + ioTexCoords.x * 20);"
+			"	oColour = texture(uTexture, ioTexCoords + vec2(0, time * 0.05));"
 			"}"
 			, GL_FRAGMENT_SHADER);
 
@@ -101,16 +105,17 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 
 	struct Vert
 	{
-		Vert(vec2 _x, vec3 _y) : x(_x), y(_y) {}
+		Vert(vec2 _x, vec3 _y, vec2 _z) : x(_x), y(_y), z(_z) {}
 		vec2 x;
 		vec3 y;
+		vec2 z;
 	};
 	vao = CreateVertexArrayObject<Vert>(
 	{
-		Vert(vec2(-1, -1), vec3(1,0,0)),
-		Vert(vec2(-1, +1), vec3(1,1,0)),
-		Vert(vec2(+1, +1), vec3(0,0,1)),
-		Vert(vec2(+1, -1), vec3(0.7F,0,1)),
+		Vert(vec2(-1, -1), vec3(1,0,0), vec2(0, 0)),
+		Vert(vec2(-1, +1), vec3(1,1,0), vec2(0, 1)),
+		Vert(vec2(+1, +1), vec3(0,0,1), vec2(1, 1)),
+		Vert(vec2(+1, -1), vec3(0.7F,0,1), vec2(1, 0)),
 	}, 
 	{
 		0, 1, 2, 
@@ -119,9 +124,10 @@ void GraphicsManager::Initialise(MeridianEngine * p_engine)
 	{
 		Attribute::Create(2, GL_FLOAT),
 		Attribute::Create(3, GL_FLOAT),
+		Attribute::Create(2, GL_FLOAT),
 	});
 	
-	fbo = CreateFrameBufferObject(64, 48, 
+	fbo = CreateFrameBufferObject(640, 480, 
 	{
 		Attachment::CreateColour(GL_RGB8, GL_CLAMP_TO_EDGE, GL_LINEAR)
 	}, 
@@ -143,6 +149,14 @@ void GraphicsManager::Update(MeridianEngine * p_engine, const float & p_dt)
 
 void GraphicsManager::Render(MeridianEngine * p_engine)
 {
+
+	if (p_engine->ViewportWhatChanged() == Meridian::MeridianEngine::ViewChangeState::VIEWPORT_SIZE)
+	{
+		vec4 vp = p_engine->GetViewport();
+		glViewport(0, 0, (unsigned int)vp.z, (unsigned int)vp.w);
+		ResizeFrameBufferObject((unsigned int)vp.z, (unsigned int)vp.w, fbo);
+	}
+
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -151,6 +165,12 @@ void GraphicsManager::Render(MeridianEngine * p_engine)
 	BindTexture(*t, 0);
 	DrawVertexArrayObject(vao, GL_TRIANGLES);
 
+
+	if (p_engine->ViewportWhatChanged() == Meridian::MeridianEngine::ViewChangeState::VIEWPORT_SIZE)
+	{
+		vec4 vp = p_engine->GetViewport();
+		glViewport(0, 0, (unsigned int)vp.z, (unsigned int)vp.w);
+	}
 	EndFrameBufferObject();
 	BindProgram(wobbleProgram);
 	glUniform1f(dir.Get("wobbleTime"), (float)glfwGetTime());
@@ -380,7 +400,6 @@ void GraphicsManager::BeginFrameBufferObject(const FrameBufferObject & p_handle)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, p_handle.m_handle);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT * static_cast<int>(p_handle.m_hasDepthBuffer));//Clears depth only if there's a depth buffer attached.
-	glViewport(0, 0, p_handle.m_dimensions.x, p_handle.m_dimensions.y);
 }
 
 void GraphicsManager::BindFrameBufferObjectTexture(const FrameBufferObject & p_handle, const vector<GLuint> & p_units)
@@ -399,7 +418,6 @@ void GraphicsManager::BindFrameBufferObjectTexture(const FrameBufferObject & p_h
 void GraphicsManager::EndFrameBufferObject()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, 640, 480);
 }
 
 void GraphicsManager::DeleteFrameBufferObject(FrameBufferObject & p_handle, const bool & p_keepShell)
@@ -408,6 +426,7 @@ void GraphicsManager::DeleteFrameBufferObject(FrameBufferObject & p_handle, cons
 	for (auto & attachment : p_handle.m_attachments)
 	{
 		glDeleteRenderbuffers(1, &attachment.m_handle);
+		glDeleteTextures(1, &attachment.m_tHandle);
 	}
 
 	//Bind 0, which means render to back buffer, as a result, fb is unbound
