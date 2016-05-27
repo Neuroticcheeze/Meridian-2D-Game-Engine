@@ -55,6 +55,9 @@ void MeridianEngine::Load()
 		}
 	}
 
+	const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	m_monitorSize = vec2(mode->width, mode->height);
+
 	glfwMakeContextCurrent(m_window);
 
 	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
@@ -112,6 +115,12 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 		//===============Loop===============
 		///printf("Capped FPS: %f, True FPS: %f\n", min(1.0F / m_duration, m_targetFramerate), 1.0F / m_duration);
 
+		static int w, h;
+		glfwGetWindowSize(m_window, &w, &h);
+		m_prevViewport = m_nowViewport;
+		m_nowViewport.z = static_cast<float>(w);
+		m_nowViewport.w = static_cast<float>(h);
+
 		m_inputManager->Update(this, m_deltaTime);
 		m_resourceManager->Update(this, m_deltaTime);
 		m_graphicsManager->Update(this, m_deltaTime);
@@ -168,6 +177,40 @@ void MeridianEngine::Terminate()
 {
 	//Kill the game loop by the next iteration.
 	m_isRunning = false;
+}
+
+void MeridianEngine::SetViewport(const ViewChangeState & p_whatToChange, const vec4 & p_value)
+{
+	switch (p_whatToChange)
+	{
+	case ViewChangeState::VIEWPORT_ALL:
+		SetViewport(ViewChangeState::VIEWPORT_POSITION, p_value);
+		SetViewport(ViewChangeState::VIEWPORT_SIZE, p_value);
+		break;
+	case ViewChangeState::VIEWPORT_POSITION:
+		m_nowViewport.x = p_value.x;
+		m_nowViewport.y = p_value.y;
+		break;
+	case ViewChangeState::VIEWPORT_SIZE:
+		//if (vec2(p_value.zw) == m_monitorSize)
+		//else//TODO: add fullscreen mode like this?
+			glfwSetWindowSize(m_window, p_value.z, p_value.w);
+		break;
+	}
+}
+
+MeridianEngine::ViewChangeState MeridianEngine::ViewportWhatChanged() const
+{
+	if (m_prevViewport.x != m_nowViewport.x || m_prevViewport.y != m_nowViewport.y)
+		return ViewChangeState::VIEWPORT_POSITION;
+
+	if (m_prevViewport.z != m_nowViewport.z || m_prevViewport.w != m_nowViewport.w)
+		return ViewChangeState::VIEWPORT_SIZE;
+
+	if ((m_prevViewport.z != m_nowViewport.z || m_prevViewport.w != m_nowViewport.w) && (m_prevViewport.x != m_nowViewport.x || m_prevViewport.y != m_nowViewport.y))
+		return ViewChangeState::VIEWPORT_ALL;
+
+	return ViewChangeState::VIEWPORT_NOTHING;
 }
 
 void MeridianEngine::HookToPreEvent(OnEnginePre p_event) { m_preHook = p_event; }

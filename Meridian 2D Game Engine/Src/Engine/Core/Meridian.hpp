@@ -14,10 +14,18 @@
 //					-GetInputManager
 //					-GetResourceManager
 //					-GetGraphicsManager
+//					-GetMonitorSize
+//					-SetViewport
+//					-GetViewport
+//					-ViewportWhatChanged
 //					-GetWindow
 //					-HookToPreEvent
 //					-HookToLoopEvent
 //					-HookToPostEvent
+//
+//				GameLoopMode
+//
+//				ViewChangeState
 //
 ===================================================================*/
 
@@ -30,6 +38,15 @@
 #include <vector>
 using std::vector;
 using std::is_base_of;
+
+
+#define GLM_SWIZZLE
+
+#include <glm\vec2.hpp>
+using glm::vec2;
+
+#include <glm\vec4.hpp>
+using glm::vec4;
 
 //=============== Third-Party Declarations ===============
 
@@ -59,6 +76,7 @@ namespace Meridian
 	public:///Internal Forward Delarations
 
 		enum class GameLoopMode;
+		enum class ViewChangeState;
 
 	public:///Constructors/Destructors
 
@@ -88,6 +106,26 @@ namespace Meridian
 		inline ResourceManager * GetResourceManager() { return m_resourceManager; }
 		inline GraphicsManager * GetGraphicsManager() { return m_graphicsManager; }
 
+			/*Get the pixel resolution of the screen 
+			that the top-left of this window is on.*/
+		inline vec2 GetMonitorSize() const
+		{
+			return m_monitorSize;
+		}
+
+			/*Set a property of the viewport.*/
+		void SetViewport(const ViewChangeState & p_whatToChange, const vec4 & p_value);
+
+			/*Get the current properties of the viewport. [x, y] 
+			is position in-game, [z, w] is size in-game.*/
+		inline vec4 GetViewport() const
+		{
+			return m_nowViewport;
+		}
+
+			/*Whether or not the viewport/game-camera changed since the previous tick.*/
+		ViewChangeState ViewportWhatChanged() const;
+
 			/*Get a handle to the main game window.*/
 		inline GLFWwindow * GetWindow()
 		{
@@ -116,6 +154,9 @@ namespace Meridian
 		OnEnginePre m_preHook;
 		OnEngineLoop m_loopHook;
 		OnEnginePost m_postHook;
+
+		vec2 m_monitorSize;
+		vec4 m_prevViewport, m_nowViewport;
 	};
 
 	/*====================================================================================================================
@@ -140,5 +181,16 @@ namespace Meridian
 			used, otherwise the game will wait out the rest of 
 			a frame if it finishes early to match the target*/
 		VARIABLE
+	};
+
+	/*============================================================
+	States that define which property about the viewport changed.
+	============================================================*/
+	enum class MeridianEngine::ViewChangeState
+	{
+		VIEWPORT_ALL,
+		VIEWPORT_POSITION,
+		VIEWPORT_SIZE,
+		VIEWPORT_NOTHING
 	};
 }

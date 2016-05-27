@@ -28,8 +28,14 @@ void main()
 	engine->HookToLoopEvent([]
 		(Meridian::MeridianEngine * engine, const float & dt) 
 		{
-			const uvec2 & pos = engine->GetInputManager()->GetMousePosition();
-			printf("Mouse pos: [%u, %u]\n", pos.x, pos.y);
+			//const uvec2 & pos = engine->GetInputManager()->GetMousePosition();
+			//printf("Mouse pos: [%u, %u]\n", pos.x, pos.y);
+
+			if (engine->ViewportWhatChanged() == Meridian::MeridianEngine::ViewChangeState::VIEWPORT_SIZE)
+			{
+				const vec4 & vp = engine->GetViewport();
+				printf("Window size: [%u, %u]\n", (unsigned int)vp.z, (unsigned int)vp.w);
+			}
 		}
 	);
 
