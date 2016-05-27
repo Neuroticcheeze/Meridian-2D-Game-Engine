@@ -41,14 +41,6 @@ void ResourceManager::Initialise(MeridianEngine * p_engine)
 {
 }
 
-void ResourceManager::Update(MeridianEngine * p_engine, const float & p_dt)
-{
-}
-
-void ResourceManager::Render(MeridianEngine * p_engine)
-{
-}
-
 void ResourceManager::Finalise(MeridianEngine * p_engine)
 {
 

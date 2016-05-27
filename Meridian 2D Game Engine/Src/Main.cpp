@@ -31,11 +31,10 @@ void main()
 			//const uvec2 & pos = engine->GetInputManager()->GetMousePosition();
 			//printf("Mouse pos: [%u, %u]\n", pos.x, pos.y);
 
-			if (engine->ViewportWhatChanged() == Meridian::MeridianEngine::ViewChangeState::VIEWPORT_SIZE)
-			{
-				const vec4 & vp = engine->GetViewport();
-				printf("Window size: [%u, %u]\n", (unsigned int)vp.z, (unsigned int)vp.w);
-			}
+			if (engine->GetInputManager()->GetKeyState(GLFW_KEY_A) == Meridian::InputManager::KeyState::DOWN) printf("down\n");
+			if (engine->GetInputManager()->GetKeyState(GLFW_KEY_A) == Meridian::InputManager::KeyState::UP) printf("up\n");
+			if (engine->GetInputManager()->GetKeyState(GLFW_KEY_A) == Meridian::InputManager::KeyState::TAP) printf("tap\n");
+			if (engine->GetInputManager()->GetKeyState(GLFW_KEY_A) == Meridian::InputManager::KeyState::RELEASE) printf("release\n");
 		}
 	);
 

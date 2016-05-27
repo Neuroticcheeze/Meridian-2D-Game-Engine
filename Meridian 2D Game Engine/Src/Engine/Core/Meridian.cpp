@@ -121,16 +121,15 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 		m_nowViewport.z = static_cast<float>(w);
 		m_nowViewport.w = static_cast<float>(h);
 
-		m_inputManager->Update(this, m_deltaTime);
-		m_resourceManager->Update(this, m_deltaTime);
+		//------------------------------------------------
 		m_graphicsManager->Update(this, m_deltaTime);
-		m_inputManager->Render(this);
-		m_resourceManager->Render(this);
 		m_graphicsManager->Render(this);
 
 		if (m_loopHook != nullptr)
 			m_loopHook(this, m_deltaTime);
-		//==================================
+		
+		m_inputManager->Update(this, m_deltaTime);
+		//------------------------------------------------
 
 		m_finishTime = (float)glfwGetTime();
 

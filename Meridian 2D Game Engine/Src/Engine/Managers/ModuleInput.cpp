@@ -18,16 +18,20 @@ using namespace Meridian;
 
 InputManager::KeyState InputManager::m_keyStates[GLFW_MAX_KEYS];
 
-void InputManager::OnKey(GLFWwindow *, int p_keycode, int p_scancode, int p_action, int p_mods)
+void InputManager::OnKey(GLFWwindow *, int p_keycode, int p_scancode, int p_action, int p_mods)//TODO: finish this functionality
 {
 	m_keyStates[p_keycode] = 
-		p_action == GLFW_PRESS ? KeyState::DOWN : 
-		(p_action == GLFW_RELEASE ? KeyState::UP : 
+		p_action == GLFW_PRESS ? KeyState::TAP : 
+		(p_action == GLFW_RELEASE ? KeyState::RELEASE : 
 			m_keyStates[p_keycode]);
 }
 
 InputManager::InputManager()
 {
+	for (int p_keycode = 0; p_keycode < GLFW_MAX_KEYS; ++p_keycode)
+	{
+		m_keyStates[p_keycode] = KeyState::UP;
+	}
 }
 
 InputManager::~InputManager()
@@ -37,7 +41,7 @@ InputManager::~InputManager()
 
 void InputManager::Initialise(MeridianEngine * p_engine)
 {
-
+	glfwSetKeyCallback(p_engine->GetWindow(), InputManager::OnKey);
 }
 
 void InputManager::Update(MeridianEngine * p_engine, const float & p_dt)
@@ -48,10 +52,16 @@ void InputManager::Update(MeridianEngine * p_engine, const float & p_dt)
 
 	m_mousePosition.x = static_cast<unsigned int>(max(x, 0.0));
 	m_mousePosition.y = static_cast<unsigned int>(max(y, 0.0));
-}
 
-void InputManager::Render(MeridianEngine * p_engine)
-{
+	for (int p_keycode = 0; p_keycode < GLFW_MAX_KEYS; ++p_keycode)
+	{
+		auto & s = m_keyStates[p_keycode];
+		if (s == KeyState::TAP)
+			m_keyStates[p_keycode] = KeyState::DOWN;
+
+		if (s == KeyState::RELEASE)
+			m_keyStates[p_keycode] = KeyState::UP;
+	}
 }
 
 void InputManager::Finalise(MeridianEngine * p_engine)

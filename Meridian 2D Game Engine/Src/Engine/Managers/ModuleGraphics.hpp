@@ -7,6 +7,10 @@
 //Header File:	ModuleGraphics.hpp
 //
 //Objects:		GraphicsManager
+//					-Initialise
+//					-Update
+//					-Render
+//					-Finalise
 //					-CreateShader
 //					-DeleteShader
 //					-CreateProgram
