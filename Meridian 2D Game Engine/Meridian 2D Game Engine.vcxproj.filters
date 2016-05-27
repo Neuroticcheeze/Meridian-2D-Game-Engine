@@ -35,6 +35,9 @@
     <ClCompile Include="Src\Engine\Managers\ModuleResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Engine\Managers\ModuleAudio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Engine\Core\Meridian.hpp" />
@@ -44,6 +47,7 @@
     <ClInclude Include="Src\Engine\Assets\AssetTexture.hpp" />
     <ClInclude Include="Src\Engine\Managers\ModuleResource.hpp" />
     <ClInclude Include="Src\Engine\Common\JenHash.hpp" />
+    <ClInclude Include="Src\Engine\Managers\ModuleAudio.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Res\test.png">

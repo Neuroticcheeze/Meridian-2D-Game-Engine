@@ -108,8 +108,6 @@ namespace Meridian
 
 	public:///Graphics Utilities
 
-	private:///Private Graphics Utilities
-
 		/*Create a shader to later be linked to a program.*/
 		GLuint CreateShader(const char * p_source, const GLenum & p_type);
 

@@ -14,6 +14,7 @@
 //					-GetInputManager
 //					-GetResourceManager
 //					-GetGraphicsManager
+//					-GetAudioManager
 //					-GetMonitorSize
 //					-SetViewport
 //					-GetViewport
@@ -60,6 +61,7 @@ namespace Meridian
 	class InputManager;
 	class ResourceManager;
 	class GraphicsManager;
+	class AudioManager;
 
 	class MeridianEngine;
 
@@ -105,6 +107,7 @@ namespace Meridian
 		inline InputManager * GetInputManager() { return m_inputManager; }
 		inline ResourceManager * GetResourceManager() { return m_resourceManager; }
 		inline GraphicsManager * GetGraphicsManager() { return m_graphicsManager; }
+		inline AudioManager * GetAudioManager() { return m_audioManager; }
 
 			/*Get the pixel resolution of the screen 
 			that the top-left of this window is on.*/
@@ -147,6 +150,7 @@ namespace Meridian
 		InputManager * m_inputManager;
 		ResourceManager * m_resourceManager;
 		GraphicsManager * m_graphicsManager;
+		AudioManager * m_audioManager;
 
 		bool m_isRunning, m_isInitialised;
 		GLFWwindow * m_window;

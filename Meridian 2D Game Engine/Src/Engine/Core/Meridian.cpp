@@ -13,6 +13,7 @@
 #include "..\Managers\ModuleInput.hpp"
 #include "..\Managers\ModuleResource.hpp"
 #include "..\Managers\ModuleGraphics.hpp"
+#include "..\Managers\ModuleAudio.hpp"
 
 #include <gl_core_4_4.h>
 #include <assert.h>
@@ -66,12 +67,12 @@ void MeridianEngine::Load()
 		return;
 	}
 
-	//Since by this point, we've successfully started everything up, we can now create and initialise all attached modules.
-
+	//Since by this point, we've successfully started everything up, we can now create and initialise all modules.
 
 	(m_inputManager = new InputManager())->Initialise(this);
 	(m_resourceManager = new ResourceManager())->Initialise(this);
 	(m_graphicsManager = new GraphicsManager())->Initialise(this);
+	(m_audioManager = new AudioManager())->Initialise(this);
 
 	if (m_preHook != nullptr)
 		m_preHook(this);
@@ -122,6 +123,8 @@ void MeridianEngine::Run(const GameLoopMode & p_mode)
 		m_nowViewport.w = static_cast<float>(h);
 
 		//------------------------------------------------
+		m_audioManager->Update(this, m_deltaTime);
+
 		m_graphicsManager->Update(this, m_deltaTime);
 		m_graphicsManager->Render(this);
 
@@ -163,6 +166,7 @@ void MeridianEngine::Unload()
 	m_inputManager->Finalise(this);
 	m_resourceManager->Finalise(this);
 	m_graphicsManager->Finalise(this);
+	m_audioManager->Finalise(this);
 
 	//Kill the window and terminate glfw.
 	glfwDestroyWindow(m_window);
@@ -193,7 +197,7 @@ void MeridianEngine::SetViewport(const ViewChangeState & p_whatToChange, const v
 	case ViewChangeState::VIEWPORT_SIZE:
 		//if (vec2(p_value.zw) == m_monitorSize)
 		//else//TODO: add fullscreen mode like this?
-			glfwSetWindowSize(m_window, p_value.z, p_value.w);
+			glfwSetWindowSize(m_window, static_cast<int>(p_value.z), static_cast<int>(p_value.w));
 		break;
 	}
 }
